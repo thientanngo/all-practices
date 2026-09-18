@@ -139,6 +139,7 @@
   .status-chip.used{background:#eef0f3;color:#7c8798;}
   .status-chip.expired{background:var(--danger-bg);color:var(--danger);}
   .status-chip.warn{background:var(--warn-bg);color:var(--warn);}
+  .badge-new{font-size:9.3px;font-weight:700;background:var(--primary);color:#fff;padding:2px 7px;border-radius:999px;margin-left:5px;vertical-align:middle;}
 
   .hero{border-radius:18px;padding:18px;color:#fff;position:relative;overflow:hidden;margin-top:10px;}
   .hero .h-stripe{position:absolute;right:-36px;bottom:-36px;width:150px;height:150px;background:rgba(255,255,255,.08);border-radius:50%;}
@@ -332,6 +333,8 @@
     check: c => `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
     shield: c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>`,
     milk: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 4-2 2v10a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V9L8 7l1-4Z"/></svg>`,
+    care: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6-4-6-9a3.5 3.5 0 0 1 6-2.4A3.5 3.5 0 0 1 18 11c0 5-6 9-6 9Z"/><path d="M3 19c1.5-2 4-3 5-1M21 19c-1.5-2-4-3-5-1"/></svg>`,
+    search: c => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`,
     doc: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg>`,
     build: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/></svg>`,
     car: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V9l2-4h12l2 4v7"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/></svg>`,
@@ -406,18 +409,20 @@
   let currentStepIdx = 0;
 
   const STEPS = [
-    {id:"A1", label:"A1", title:"A1 · Trang chủ (mô phỏng)", desc:"Ô tiện ích \"Quyền lợi và Hỗ trợ\" nằm cùng cấp với các tiện ích khác, không chiếm chỗ đặc biệt.",
+    {id:"A1", label:"A1", title:"A1 · Trang chủ (mô phỏng)", desc:"Mục \"An sinh xã hội\" nằm cùng cấp với các nhóm dịch vụ khác trên trang chủ, không chiếm chỗ đặc biệt.",
       apply:()=>{ mode="citizen"; citizenNav=["home"]; }},
+    {id:"A1b", label:"A1b", title:"A1b · An sinh xã hội → An sinh xã hội số", desc:"Bấm vào \"An sinh xã hội\" sẽ thấy thêm mục mới \"An sinh xã hội số\" bên cạnh tính năng đã có sẵn (Tài khoản hưởng an sinh xã hội). Đây là entry point cho mini app của UrBox.",
+      apply:()=>{ mode="citizen"; citizenNav=["home","socialWelfareMenu"]; }},
     {id:"A2", label:"A2", title:"A2 · Danh sách quyền lợi", desc:"Hiển thị đồng thời nhiều quyền lợi từ nhiều chương trình khác nhau (FA-01). Mỗi quyền lợi gắn một mục đích rõ ràng.",
-      apply:()=>{ mode="citizen"; citizenNav=["home","benefits"]; }},
+      apply:()=>{ mode="citizen"; citizenNav=["home","socialWelfareMenu","benefits"]; }},
     {id:"A3", label:"A3", title:"A3 · Chi tiết quyền lợi", desc:"Màn hình quan trọng nhất: nhóm hàng cho phép/loại trừ, nhiều nhóm mục đích con không chuyển đổi, hạn mức theo lần/tháng.",
-      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"}]; }},
+      apply:()=>{ mode="citizen"; citizenNav=["home","socialWelfareMenu","benefits",{name:"benefitDetail",param:"QL-0001"}]; }},
     {id:"A4", label:"A4", title:"A4 · Tìm điểm sử dụng", desc:"Danh sách merchant gần nhất - mạng lưới là tài sản UrBox mang lại.",
-      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"findMerchant",param:"QL-0001"}]; }},
+      apply:()=>{ mode="citizen"; citizenNav=["home","socialWelfareMenu","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"findMerchant",param:"QL-0001"}]; }},
     {id:"A5", label:"A5", title:"A5 · Mã sử dụng", desc:"Mã động, đếm ngược 60 giây, tự đổi khi hết hiệu lực để chống chụp màn hình gửi người khác (FA-05).",
-      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"findMerchant",param:"QL-0001"},{name:"useCode",param:"QL-0001"}]; }},
+      apply:()=>{ mode="citizen"; citizenNav=["home","socialWelfareMenu","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"findMerchant",param:"QL-0001"},{name:"useCode",param:"QL-0001"}]; }},
     {id:"A6", label:"A6", title:"A6 · Xác nhận đã dùng", desc:"Sau khi merchant xác nhận giao dịch (M3), người dân thấy ngay ngày giờ, merchant, nhóm hàng, giá trị và giá trị còn lại - minh bạch với người dân.",
-      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"confirmUse",param:"QL-0001"}]; }},
+      apply:()=>{ mode="citizen"; citizenNav=["home","socialWelfareMenu","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"confirmUse",param:"QL-0001"}]; }},
     {id:"A7", label:"A7", title:"A7 · Lịch sử", desc:"Toàn bộ giao dịch, kể cả quyền lợi đã hết hạn.",
       apply:()=>{ mode="citizen"; citizenNav=["home","history"]; }},
     {id:"A8", label:"A8", title:"A8 · Không dùng smartphone", desc:"Bắt buộc có. Cán bộ chương trình tra cứu bằng mã định danh và in phiếu giấy có mã cho Bà Tư.",
@@ -491,12 +496,12 @@
   function screenHome(){
     const activeBenefits = Object.values(BENEFITS).filter(b=>b.status==="active" && (b.id==="QL-0001"||b.id==="QL-0002"));
     const utilities = [
-      {icon:"doc", label:"Dịch vụ công", dot:false},
-      {icon:"shield", label:"Bảo hiểm xã hội", dot:false},
-      {icon:"gift2", label:"Quyền lợi và Hỗ trợ", dot:true, action:()=>cGoRoot("benefits")},
-      {icon:"percent", label:"Thuế cá nhân", dot:false},
-      {icon:"build", label:"Cư trú", dot:false},
-      {icon:"car", label:"Giao thông", dot:false}
+      {icon:"doc", label:"Dịch vụ công", target:null},
+      {icon:"care", label:"An sinh xã hội", dot:true, target:"socialWelfareMenu"},
+      {icon:"shield", label:"Bảo hiểm xã hội", target:null},
+      {icon:"percent", label:"Thuế cá nhân", target:null},
+      {icon:"build", label:"Cư trú", target:null},
+      {icon:"car", label:"Giao thông", target:null}
     ];
     return `
       <div class="id-card">
@@ -506,15 +511,42 @@
         </div>
         <div class="verify-chip">${ICON.shield("#e7f2ee")} Đã định danh điện tử mức 2 (minh họa)</div>
       </div>
-      <div class="section-title">Tiện ích</div>
+      <div class="section-title">Nhóm dịch vụ</div>
       <div class="quick-grid">
-        ${utilities.map(u=>`<div class="quick-item" onclick="${u.action?`AppSim.goRootUtil('benefits')`:'void(0)'}">
+        ${utilities.map(u=>`<div class="quick-item" onclick="${u.target?`AppSim.goRootUtil('${u.target}')`:'void(0)'}">
           ${u.dot?'<span class="qi-dot"></span>':''}
           <div class="qi-ic" style="background:#eef1f4;">${ICON[u.icon]("#3d6a63")}</div>${u.label}
         </div>`).join("")}
       </div>
       <div class="section-title">Quyền lợi gần đây<span class="more" onclick="AppSim.goRootUtil('benefits')">Xem tất cả</span></div>
       ${activeBenefits.map(b=>benefitRow(b)).join("")}
+    `;
+  }
+
+  function screenSocialWelfareMenu(){
+    return `
+      <div style="position:relative;margin-top:2px;">
+        <span style="position:absolute;left:12px;top:11px;">${ICON.search("#9aa8ba")}</span>
+        <input type="text" placeholder="Bạn đang muốn tìm kiếm..." disabled
+          style="width:100%;padding:10px 12px 10px 34px;border-radius:11px;border:1px solid var(--line);font-size:12.8px;background:#f7f8fa;color:#9aa8ba;">
+      </div>
+      <div class="section-title" style="margin-top:16px;">An sinh xã hội</div>
+      <div class="b-card" style="cursor:default;opacity:.65;">
+        <div class="bc-ic" style="background:#eef1f4;">${ICON.build("#6b7787")}</div>
+        <div style="flex:1;">
+          <div class="bc-title">Tài khoản hưởng an sinh xã hội</div>
+          <div class="bc-issuer">Tính năng đã có sẵn trên ứng dụng định danh điện tử - nằm ngoài phạm vi minh họa này.</div>
+        </div>
+      </div>
+      <div class="b-card" onclick="AppSim.goRootUtil('benefits')">
+        <div class="bc-ic" style="background:#3d6a631f;">${ICON.care("#3d6a63")}</div>
+        <div style="flex:1;">
+          <div class="bc-title">An sinh xã hội số <span class="badge-new">Đề xuất minh họa</span></div>
+          <div class="bc-issuer">Xem và sử dụng quyền lợi được cấp - mini app do UrBox đề xuất tích hợp tại đây.</div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6;">Mục "Tài khoản hưởng an sinh xã hội" ở trên minh họa một tính năng có sẵn để người xem hình dung đúng vị trí -
+      bản mô phỏng này không mô tả lại tính năng đó.</p>
     `;
   }
 
@@ -822,6 +854,7 @@
     const {name,param} = cCurrent();
     let html="";
     if (name==="home") html=screenHome();
+    else if (name==="socialWelfareMenu") html=screenSocialWelfareMenu();
     else if (name==="benefits") html=screenBenefits();
     else if (name==="benefitDetail") html=screenBenefitDetail(param);
     else if (name==="findMerchant") html=screenFindMerchant(param);
@@ -832,9 +865,9 @@
     document.getElementById("citizenBody").innerHTML = html;
     document.getElementById("citizenBody").scrollTop=0;
 
-    const titles={home:null, benefits:"Quyền lợi của tôi", benefitDetail:"Chi tiết quyền lợi", findMerchant:"Tìm điểm sử dụng",
+    const titles={home:null, socialWelfareMenu:"An sinh xã hội", benefits:"Quyền lợi của tôi", benefitDetail:"Chi tiết quyền lợi", findMerchant:"Tìm điểm sử dụng",
       useCode:"Mã sử dụng", confirmUse:"Xác nhận đã dùng", history:"Lịch sử sử dụng", account:"Tài khoản"};
-    const showBack = ["benefitDetail","findMerchant","useCode","confirmUse","history"].includes(name);
+    const showBack = ["socialWelfareMenu","benefitDetail","findMerchant","useCode","confirmUse","history"].includes(name);
     document.getElementById("citizenTopbar").innerHTML = (name==="home") ? "" : `<div class="app-topbar">
       ${showBack?`<div class="back-btn" onclick="AppSim.back()">${ICON.back("#1a2230")}</div>`:`<div style="width:29px;"></div>`}
       <h2>${titles[name]||""}</h2><div style="width:29px;"></div></div>`;
@@ -894,7 +927,7 @@
   };
 
   function syncStepFromCitizen(name){
-    const map={home:"A1",benefits:"A2",history:"A7",account:"A2"};
+    const map={home:"A1",socialWelfareMenu:"A1b",benefits:"A2",history:"A7",account:"A2"};
     const id=map[name]; if (id){ const idx=STEPS.findIndex(s=>s.id===id); if (idx>=0){ currentStepIdx=idx; renderStepPanel(); } }
   }
 
