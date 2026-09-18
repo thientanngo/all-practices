@@ -7,8 +7,8 @@
 <style>
   :root{
     --ink:#1a2230; --muted:#6b7787; --line:#e3e7ee; --bg-app:#f6f7f9; --card:#ffffff;
-    --primary:#3d6a63; --primary-2:#274a44; --primary-soft:#e4eeec;
-    --accent:#8a6d3b; --accent-soft:#f3ecdf;
+    --primary:#c8102e; --primary-2:#7a0c1f; --primary-soft:#fbe0e4;
+    --accent:#c99a2e; --accent-soft:#fdf3dc;
     --warn:#b3541e; --warn-bg:#fdefe3;
     --ok:#2f7a52; --ok-bg:#e7f5ec;
     --danger:#a63a3a; --danger-bg:#fbe9e9;
@@ -108,14 +108,20 @@
   /* ===== CONTENT PIECES ===== */
   .id-card{background:linear-gradient(135deg,var(--primary),var(--primary-2));border-radius:16px;padding:16px;
     color:#fff;margin:12px 0 14px;position:relative;overflow:hidden;}
-  .id-card .stripe{position:absolute;right:-30px;top:-30px;width:130px;height:130px;background:rgba(255,255,255,.06);border-radius:50%;}
+  .id-card::before{content:"";position:absolute;inset:0;opacity:.16;pointer-events:none;
+    background-image:
+      repeating-radial-gradient(circle at 20% 30%, rgba(255,215,110,.9) 0 2px, transparent 2px 26px),
+      repeating-radial-gradient(circle at 80% 75%, rgba(255,215,110,.9) 0 2px, transparent 2px 26px);
+  }
+  .id-card .stripe{position:absolute;right:-30px;top:-30px;width:130px;height:130px;background:rgba(255,215,110,.14);border-radius:50%;}
+  .star-badge{color:#ffd76e;display:inline-flex;}
   .id-card .row{display:flex;align-items:center;gap:12px;}
   .avatar{width:46px;height:46px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
     display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;}
   .id-card .name{font-size:15px;font-weight:700;}
   .id-card .idnum{font-size:11.5px;color:#cfe0dc;margin-top:2px;}
   .verify-chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;margin-top:9px;
-    background:rgba(255,255,255,.16);color:#e7f2ee;padding:4px 9px;border-radius:999px;}
+    background:rgba(255,255,255,.16);color:#fff2d9;padding:4px 9px;border-radius:999px;font-weight:600;}
 
   .section-title{font-size:13px;font-weight:700;color:var(--ink);margin:16px 0 9px;display:flex;justify-content:space-between;align-items:center;}
   .section-title .more{font-size:11.5px;color:var(--primary);font-weight:600;cursor:pointer;}
@@ -332,6 +338,7 @@
     back: c => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`,
     check: c => `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
     shield: c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>`,
+    star: c => `<svg width="13" height="13" viewBox="0 0 24 24" fill="${c}" stroke="${c}" stroke-width="1"><path d="M12 2.5l2.9 6.4 6.9.7-5.2 4.7 1.5 6.9-6.1-3.6-6.1 3.6 1.5-6.9-5.2-4.7 6.9-.7Z"/></svg>`,
     milk: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 4-2 2v10a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V9L8 7l1-4Z"/></svg>`,
     care: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6-4-6-9a3.5 3.5 0 0 1 6-2.4A3.5 3.5 0 0 1 18 11c0 5-6 9-6 9Z"/><path d="M3 19c1.5-2 4-3 5-1M21 19c-1.5-2-4-3-5-1"/></svg>`,
     search: c => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>`,
@@ -355,7 +362,7 @@
   const BENEFITS = {
     "QL-0001": {
       id:"QL-0001", chuongTrinh:"Hỗ trợ dinh dưỡng mẹ và bé", coQuanCap:"[Chương trình an sinh cấp tỉnh - minh họa]",
-      icon:"milk", color:"#3d6a63",
+      icon:"milk", color:"#c8102e",
       hanDung: daysFromNow(25), status:"active",
       nhomHangChoPhep:["Sữa và thực phẩm bổ sung cho trẻ dưới 24 tháng","Thực phẩm tươi sống, rau củ quả","Vitamin, khoáng chất cho mẹ và bé"],
       nhomHangLoaiTru:["Đồ uống có cồn, thuốc lá","Hàng xa xỉ, mỹ phẩm cao cấp","Không quy đổi tiền mặt dưới mọi hình thức"],
@@ -365,7 +372,7 @@
     },
     "QL-0002": {
       id:"QL-0002", chuongTrinh:"Quyền lợi chăm lo đoàn viên công đoàn", coQuanCap:"[Công đoàn cơ sở - minh họa]",
-      icon:"gift2", color:"#8a6d3b",
+      icon:"gift2", color:"#c99a2e",
       hanDung: daysFromNow(5), status:"active",
       nhomHangChoPhep:["Nhu yếu phẩm gia đình","Đồ dùng học tập cho con đoàn viên"],
       nhomHangLoaiTru:["Rượu, bia, thuốc lá","Không quy đổi tiền mặt"],
@@ -375,7 +382,7 @@
     },
     "QL-9001": {
       id:"QL-9001", chuongTrinh:"Hỗ trợ dinh dưỡng người cao tuổi", coQuanCap:"[Chương trình an sinh cấp xã - minh họa]",
-      icon:"milk", color:"#3d6a63",
+      icon:"milk", color:"#c8102e",
       hanDung: daysFromNow(40), status:"active",
       nhomHangChoPhep:["Thực phẩm dinh dưỡng cho người cao tuổi","Thuốc và vật tư y tế cơ bản"],
       nhomHangLoaiTru:["Đồ uống có cồn, thuốc lá","Không quy đổi tiền mặt"],
@@ -509,13 +516,13 @@
         <div class="row"><div class="avatar">CL</div>
           <div><div class="name">Chị Lan (minh họa)</div><div class="idnum">Mã định danh: 000xxx****119 (giả lập)</div></div>
         </div>
-        <div class="verify-chip">${ICON.shield("#e7f2ee")} Đã định danh điện tử mức 2 (minh họa)</div>
+        <div class="verify-chip">Đã định danh điện tử mức 2 (minh họa) <span class="star-badge">${ICON.star("#ffd76e")}</span></div>
       </div>
       <div class="section-title">Nhóm dịch vụ</div>
       <div class="quick-grid">
         ${utilities.map(u=>`<div class="quick-item" onclick="${u.target?`AppSim.goRootUtil('${u.target}')`:'void(0)'}">
           ${u.dot?'<span class="qi-dot"></span>':''}
-          <div class="qi-ic" style="background:#eef1f4;">${ICON[u.icon]("#3d6a63")}</div>${u.label}
+          <div class="qi-ic" style="background:#eef1f4;">${ICON[u.icon]("#c8102e")}</div>${u.label}
         </div>`).join("")}
       </div>
       <div class="section-title">Quyền lợi gần đây<span class="more" onclick="AppSim.goRootUtil('benefits')">Xem tất cả</span></div>
@@ -539,7 +546,7 @@
         </div>
       </div>
       <div class="b-card" onclick="AppSim.goRootUtil('benefits')">
-        <div class="bc-ic" style="background:#3d6a631f;">${ICON.care("#3d6a63")}</div>
+        <div class="bc-ic" style="background:#c8102e1f;">${ICON.care("#c8102e")}</div>
         <div style="flex:1;">
           <div class="bc-title">An sinh xã hội số <span class="badge-new">Đề xuất minh họa</span></div>
           <div class="bc-issuer">Xem và sử dụng quyền lợi được cấp - mini app do UrBox đề xuất tích hợp tại đây.</div>
@@ -617,7 +624,7 @@
       </div>
       <div class="section-title">Điểm sử dụng gần bạn</div>
       ${b.merchants.map(m=>`<div class="merchant-row">
-        <div>${ICON.pin("#3d6a63")}</div>
+        <div>${ICON.pin("#c8102e")}</div>
         <div style="flex:1;margin-left:8px;"><div class="mr-name">${m}</div><div class="mr-sub">Merchant liên kết chương trình</div></div>
         <button class="ghost-btn" style="width:auto;margin:0;padding:7px 12px;font-size:11.5px;" onclick="AppSim.go('useCode','${b.id}')">Sử dụng tại đây</button>
       </div>`).join("")}
@@ -880,7 +887,7 @@
       const items=[{id:"home",label:"Trang chủ",icon:"home"},{id:"benefits",label:"Quyền lợi của tôi",icon:"gift2",badge:true},
         {id:"history",label:"Lịch sử",icon:"doc"},{id:"account",label:"Tài khoản",icon:"user"}];
       navBar.innerHTML = items.map(it=>`<div class="nav-item ${name===it.id?'active':''} ${it.badge&&name!=='benefits'?'has-badge':''}" onclick="AppSim.goRootUtil('${it.id}')">
-        <span class="badge-dot"></span>${ICON[it.icon](name===it.id?"#3d6a63":"#9aa8ba")}<span>${it.label}</span></div>`).join("");
+        <span class="badge-dot"></span>${ICON[it.icon](name===it.id?"#c8102e":"#9aa8ba")}<span>${it.label}</span></div>`).join("");
     }
     if (name==="useCode") startQrCountdown();
   }
