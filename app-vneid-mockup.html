@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mô phỏng UI: Voucher trong app VNeID</title>
+<style>
+  :root{
+    --navy:#0b2e5c;
+    --navy-2:#123f7a;
+    --blue:#1f6fd6;
+    --blue-2:#4f93e8;
+    --red:#d0263a;
+    --gold:#f0b93a;
+    --ink:#0f1a2b;
+    --muted:#66788f;
+    --line:#e2e8f1;
+    --bg-app:#f4f7fb;
+    --card:#ffffff;
+    --ok:#1e9e6b;
+    --ok-bg:#e6f7ef;
+    --warn:#b8790a;
+    --warn-bg:#fdf1dc;
+    --page-bg:#0d1420;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(1100px 550px at 15% -10%, #142a45 0%, var(--page-bg) 55%) fixed;
+    color:#e9eef6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:0 0 50px;
+  }
+  .top-banner{
+    text-align:center;font-size:12px;letter-spacing:.04em;color:#ffd9a3;
+    background:rgba(240,185,58,.12);border-bottom:1px solid rgba(240,185,58,.35);
+    padding:8px 14px;
+  }
+  header.hd{max-width:1180px;margin:0 auto;padding:30px 20px 10px;}
+  header.hd .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;
+    color:#ffb27a;background:rgba(255,106,26,.12);border:1px solid rgba(255,106,26,.35);
+    padding:4px 10px;border-radius:999px;margin-bottom:12px;
+  }
+  header.hd h1{font-size:clamp(20px,2.8vw,28px);margin:0 0 8px;}
+  header.hd p{color:#9db0c6;max-width:760px;margin:0;font-size:14px;line-height:1.55;}
+
+  .stage{
+    max-width:1180px;margin:0 auto;padding:26px 20px 0;
+    display:grid;grid-template-columns:400px 1fr;gap:28px;align-items:start;
+  }
+  @media (max-width:920px){.stage{grid-template-columns:1fr;}}
+
+  /* ============ PHONE FRAME ============ */
+  .phone-col{display:flex;flex-direction:column;align-items:center;position:sticky;top:20px;}
+  .phone{
+    width:360px;height:760px;background:#0a0f16;border-radius:46px;
+    padding:14px;box-shadow:0 30px 60px rgba(0,0,0,.5), inset 0 0 0 2px #1c2733;
+    position:relative;
+  }
+  .phone-screen{
+    width:100%;height:100%;background:var(--bg-app);border-radius:32px;overflow:hidden;
+    position:relative;display:flex;flex-direction:column;color:var(--ink);
+  }
+  .notch{
+    position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:130px;height:22px;background:#0a0f16;border-radius:0 0 16px 16px;z-index:30;
+  }
+  .status-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:10px 22px 6px;font-size:12.5px;font-weight:600;color:var(--ink);flex-shrink:0;
+  }
+  .status-bar .icons{display:flex;gap:5px;align-items:center;}
+
+  .app-topbar{
+    display:flex;align-items:center;gap:10px;padding:6px 16px 14px;flex-shrink:0;
+    background:var(--bg-app);
+  }
+  .app-topbar .back-btn{
+    width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  }
+  .app-topbar h2{font-size:17px;margin:0;flex:1;}
+  .app-topbar .top-action{font-size:12.5px;color:var(--blue);cursor:pointer;font-weight:600;}
+
+  .screen-body{flex:1;overflow-y:auto;padding:0 16px 90px;}
+  .screen-body::-webkit-scrollbar{width:0;}
+
+  .bottom-nav{
+    position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+    display:flex;padding:8px 6px calc(env(safe-area-inset-bottom,0) + 8px);z-index:20;
+  }
+  .nav-item{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    color:#9aa8ba;cursor:pointer;font-size:10.5px;position:relative;padding:4px 0;
+  }
+  .nav-item.active{color:var(--blue);}
+  .nav-item .badge-dot{
+    position:absolute;top:-1px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;
+    background:var(--red);border:1.5px solid #fff;display:none;
+  }
+  .nav-item.has-badge .badge-dot{display:block;}
+
+  /* push notification overlay */
+  .push-toast{
+    position:absolute;top:40px;left:10px;right:10px;background:rgba(20,26,36,.94);
+    color:#fff;border-radius:16px;padding:11px 12px;display:flex;gap:10px;align-items:flex-start;
+    z-index:50;transform:translateY(-140px);opacity:0;transition:transform .35s ease, opacity .35s ease;
+    cursor:pointer;box-shadow:0 12px 30px rgba(0,0,0,.35);
+  }
+  .push-toast.show{transform:translateY(0);opacity:1;}
+  .push-toast .pt-icon{
+    width:30px;height:30px;border-radius:9px;background:var(--blue);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .push-toast .pt-title{font-size:12.5px;font-weight:700;margin-bottom:2px;}
+  .push-toast .pt-body{font-size:12px;color:#c7d1de;line-height:1.4;}
+  .push-toast .pt-time{font-size:10.5px;color:#8b96a5;margin-left:auto;flex-shrink:0;}
+
+  /* ============ CONTENT PIECES ============ */
+  .id-card{
+    background:linear-gradient(135deg,var(--navy),var(--navy-2));
+    border-radius:18px;padding:18px;color:#fff;margin:14px 0 16px;position:relative;overflow:hidden;
+  }
+  .id-card .stripe{position:absolute;right:-30px;top:-30px;width:140px;height:140px;background:rgba(255,255,255,.06);border-radius:50%;}
+  .id-card .row{display:flex;align-items:center;gap:12px;}
+  .avatar{
+    width:50px;height:50px;border-radius:50%;background:var(--gold);color:#4a3400;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;
+  }
+  .id-card .name{font-size:16px;font-weight:700;}
+  .id-card .idnum{font-size:12px;color:#c9d7ec;margin-top:2px;}
+  .verify-chip{
+    display:inline-flex;align-items:center;gap:5px;font-size:11px;margin-top:10px;
+    background:rgba(30,158,107,.22);color:#8fe6bd;padding:4px 9px;border-radius:999px;
+  }
+
+  .section-title{font-size:13.5px;font-weight:700;color:var(--ink);margin:18px 0 10px;display:flex;justify-content:space-between;align-items:center;}
+  .section-title .more{font-size:12px;color:var(--blue);font-weight:600;cursor:pointer;}
+
+  .quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .quick-item{
+    background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 4px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-size:10.8px;
+    color:var(--ink);text-align:center;
+  }
+  .quick-item .qi-ic{
+    width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  }
+
+  .promo-card{
+    margin-top:14px;background:linear-gradient(120deg,#fff4e0,#ffe4c2);border:1px solid #f3d2a0;
+    border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;
+  }
+  .promo-card .pc-ic{
+    width:42px;height:42px;border-radius:12px;background:var(--gold);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .promo-card .pc-title{font-size:13px;font-weight:700;color:#5b3d00;}
+  .promo-card .pc-sub{font-size:11.5px;color:#8a6a2c;margin-top:2px;}
+
+  .empty-hint{color:var(--muted);font-size:13px;text-align:center;padding:50px 10px;}
+
+  .noti-item{
+    display:flex;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;
+  }
+  .noti-item .ni-ic{
+    width:38px;height:38px;border-radius:50%;background:#e8f1fd;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .noti-item .ni-title{font-size:13px;font-weight:600;color:var(--ink);}
+  .noti-item .ni-sub{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;}
+  .noti-item .ni-time{font-size:10.5px;color:#a7b4c4;margin-top:4px;}
+  .noti-item.unread{background:#f2f7ff;border-radius:12px;}
+  .unread-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:5px;}
+
+  .seg{display:flex;background:#eaeef4;border-radius:12px;padding:3px;margin:14px 0;}
+  .seg button{
+    flex:1;border:none;background:transparent;padding:8px 4px;border-radius:10px;font-size:12.5px;
+    font-weight:600;color:var(--muted);cursor:pointer;
+  }
+  .seg button.active{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+
+  .v-card{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;
+    cursor:pointer;display:flex;gap:12px;align-items:flex-start;
+  }
+  .v-card .vc-ic{
+    width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  }
+  .v-card .vc-title{font-size:13.5px;font-weight:700;color:var(--ink);}
+  .v-card .vc-issuer{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .v-card .vc-value{font-size:14px;font-weight:700;color:var(--navy);margin-top:6px;}
+  .v-card .vc-lock{font-size:10.5px;color:var(--warn);background:var(--warn-bg);display:inline-block;padding:2px 7px;border-radius:999px;margin-top:6px;}
+  .status-chip{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;flex-shrink:0;}
+  .status-chip.active{background:var(--ok-bg);color:var(--ok);}
+  .status-chip.used{background:#eef0f3;color:#7c8798;}
+  .status-chip.expired{background:#fbe9e9;color:var(--red);}
+
+  .voucher-hero{
+    border-radius:20px;padding:20px;color:#fff;position:relative;overflow:hidden;margin-top:12px;
+  }
+  .voucher-hero .vh-stripe{position:absolute;right:-40px;bottom:-40px;width:160px;height:160px;background:rgba(255,255,255,.08);border-radius:50%;}
+  .voucher-hero .vh-tag{font-size:11px;background:rgba(255,255,255,.18);display:inline-block;padding:3px 9px;border-radius:999px;margin-bottom:10px;}
+  .voucher-hero .vh-value{font-size:26px;font-weight:800;}
+  .voucher-hero .vh-title{font-size:13.5px;margin-top:4px;opacity:.95;}
+  .voucher-hero .vh-id{font-size:11px;margin-top:14px;opacity:.85;letter-spacing:.05em;}
+
+  .detail-block{margin-top:16px;}
+  .detail-block h4{font-size:12.5px;color:var(--muted);margin:0 0 8px;text-transform:uppercase;letter-spacing:.03em;}
+  .kv-row{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line);}
+  .kv-row span:first-child{color:var(--muted);}
+  .kv-row span:last-child{font-weight:600;color:var(--ink);}
+  .bullet-list{margin:0;padding-left:18px;font-size:12.8px;color:var(--ink);line-height:1.7;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .chip{font-size:11.5px;background:#eef3fb;color:var(--navy-2);padding:5px 10px;border-radius:999px;}
+
+  .primary-btn{
+    width:100%;background:var(--blue);color:#fff;border:none;border-radius:13px;padding:13px;
+    font-size:14.5px;font-weight:700;cursor:pointer;margin-top:18px;
+  }
+  .primary-btn:disabled{background:#c7d3e2;cursor:not-allowed;}
+  .ghost-btn{
+    width:100%;background:#fff;color:var(--blue);border:1.5px solid var(--blue);border-radius:13px;padding:12px;
+    font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;
+  }
+  .used-note{
+    margin-top:16px;background:var(--ok-bg);color:var(--ok);border-radius:12px;padding:12px 14px;font-size:12.8px;
+    display:flex;gap:8px;align-items:flex-start;
+  }
+
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;margin-top:10px;}
+  .qr-box{
+    width:190px;height:190px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;
+    display:grid;grid-template-columns:repeat(11,1fr);grid-template-rows:repeat(11,1fr);gap:2px;
+  }
+  .qr-box i{background:#0f1a2b;border-radius:1px;}
+  .qr-box i.off{background:transparent;}
+  .qr-timer{font-size:12.5px;color:var(--muted);margin-top:12px;}
+  .qr-timer b{color:var(--red);}
+  .field{margin-top:16px;width:100%;}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .field select{
+    width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--line);font-size:13.5px;background:#fff;
+  }
+
+  .success-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:36px;}
+  .check-circle{
+    width:78px;height:78px;border-radius:50%;background:var(--ok-bg);display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;
+  }
+  .success-wrap h3{font-size:17px;margin:0 0 6px;color:var(--ink);}
+  .success-wrap p{font-size:13px;color:var(--muted);margin:0;max-width:260px;}
+
+  .profile-row{
+    display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);
+    border-radius:14px;padding:13px 14px;margin-bottom:10px;cursor:pointer;
+  }
+  .profile-row .pr-label{font-size:13.5px;color:var(--ink);flex:1;}
+
+  /* ============ CONTROL PANEL ============ */
+  .panel{max-width:100%;}
+  .panel h2{font-size:18px;margin:0 0 4px;}
+  .panel .sub{color:#9db0c6;font-size:13px;margin:0 0 18px;}
+  .panel-card{
+    background:linear-gradient(180deg,#131f31,#0f1926);border:1px solid #223349;border-radius:16px;
+    padding:18px;margin-bottom:16px;
+  }
+  .panel-card h3{margin:0 0 12px;font-size:14px;color:#dfe8f4;}
+  .uc-grid{display:grid;grid-template-columns:1fr;gap:8px;}
+  .uc-item{
+    display:flex;gap:10px;align-items:center;background:#0d1826;border:1.5px solid #223349;border-radius:12px;
+    padding:10px 12px;cursor:pointer;
+  }
+  .uc-item.selected{border-color:#4f93e8;background:#122238;}
+  .uc-item .uc-ic{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .uc-item .uc-name{font-size:13px;font-weight:600;color:#e9eef6;}
+  .uc-item .uc-desc{font-size:11.3px;color:#8fa3ba;margin-top:2px;}
+  .panel-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+  .panel-field label{display:block;font-size:11.5px;color:#8fa3ba;margin-bottom:5px;}
+  .panel-field input{
+    width:100%;background:#0a121c;border:1px solid #223349;color:#e9eef6;padding:9px 10px;
+    border-radius:9px;font-size:13px;
+  }
+  .panel-btn{
+    width:100%;margin-top:14px;background:linear-gradient(180deg,#ff8a3d,#e8590c);color:#fff;border:none;
+    border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;
+  }
+  .panel-btn.ghost{background:transparent;border:1px solid #2c405a;color:#c7d3e2;margin-top:8px;}
+  .status-line{font-size:12.5px;color:#8fa3ba;margin-top:12px;min-height:18px;}
+  .status-line b{color:#8fe6bd;}
+  .disclaimer{font-size:11.5px;color:#6d7f96;line-height:1.6;margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="top-banner">Bản mô phỏng minh họa nội bộ - không phải ứng dụng VNeID chính thức, không kết nối hệ thống thật</div>
+
+<header class="hd">
+  <span class="eyebrow">Mô phỏng UI - Voucher công qua VNeID</span>
+  <h1>Trải nghiệm người dân nhận &amp; sử dụng voucher trong app VNeID</h1>
+  <p>Bấm "Chính quyền cấp voucher mới" ở bảng điều khiển bên phải để mô phỏng người dân nhận thông báo,
+  mở ví voucher, xem điều kiện khóa mục đích và quét mã sử dụng tại merchant liên kết.</p>
+</header>
+
+<div class="stage">
+  <!-- ================= PHONE ================= -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="phone-screen" id="phoneScreen">
+        <div class="push-toast" id="pushToast">
+          <div class="pt-icon" id="iconSlot-push"></div>
+          <div style="flex:1;">
+            <div class="pt-title" id="pushTitle">VNeID</div>
+            <div class="pt-body" id="pushBody">Bạn có thông báo mới</div>
+          </div>
+          <div class="pt-time">bây giờ</div>
+        </div>
+
+        <div class="status-bar">
+          <span id="clock">08:00</span>
+          <div class="icons">
+            <span id="iconSlot-signal"></span>
+            <span id="iconSlot-wifi"></span>
+            <span id="iconSlot-battery"></span>
+          </div>
+        </div>
+
+        <div id="topbarSlot"></div>
+        <div class="screen-body" id="screenBody"></div>
+
+        <div class="bottom-nav" id="bottomNav"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CONTROL PANEL ================= -->
+  <div class="panel">
+    <h2>Bảng điều khiển mô phỏng</h2>
+    <p class="sub">Đóng vai "hệ thống chính quyền / UrBox" để đẩy voucher vào app VNeID của người dân.</p>
+
+    <div class="panel-card">
+      <h3>1. Chọn use case an sinh xã hội</h3>
+      <div class="uc-grid" id="ucGrid"></div>
+    </div>
+
+    <div class="panel-card">
+      <h3>2. Thông tin đợt cấp</h3>
+      <div class="panel-row">
+        <div class="panel-field">
+          <label>Người thụ hưởng (demo)</label>
+          <input type="text" id="benefName" value="Nguyễn Văn A">
+        </div>
+        <div class="panel-field">
+          <label>Mệnh giá (VND)</label>
+          <input type="number" id="benefValue" step="50000" value="300000">
+        </div>
+      </div>
+      <button class="panel-btn" id="issueBtn">Chính quyền cấp voucher mới qua VNeID</button>
+      <button class="panel-btn ghost" id="resetBtn">Đặt lại mô phỏng</button>
+      <div class="status-line" id="statusLine">Chưa có voucher nào được cấp trong phiên mô phỏng này.</div>
+    </div>
+
+    <div class="panel-card">
+      <h3>Ghi chú</h3>
+      <p class="disclaimer">
+      Toàn bộ tên người thụ hưởng, mã định danh, mã voucher và merchant hiển thị trong bản mô phỏng đều là
+      dữ liệu giả lập phục vụ trình bày ý tưởng sản phẩm, không phải dữ liệu thật của cá nhân hay đối tác.
+      Giao diện được thiết kế mô phỏng theo tinh thần ứng dụng VNeID, không sao chép mã nguồn hay tài sản
+      thương hiệu của ứng dụng chính thức.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= ICONS (inline SVG, stroke style) ================= */
+  const ICON = {
+    home: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>`,
+    bell: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>`,
+    ticket: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="M10 6v12" stroke-dasharray="3 3"/></svg>`,
+    user: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4S17.8 16.4 19 20"/></svg>`,
+    chevron: c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>`,
+    back: c => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`,
+    check: c => `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
+    shield: c => `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>`,
+    rice: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 20c0-5 2-9 6-11 4 2 6 6 6 11"/></svg>`,
+    gift: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 9h16v3H4z"/><path d="M12 9v11"/><path d="M12 9c-1.5-4-6-4-6-1.2C6 9 8 9 12 9Z"/><path d="M12 9c1.5-4 6-4 6-1.2C18 9 16 9 12 9Z"/></svg>`,
+    heart: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-9.5-8.8C.7 8 2 4.5 5.4 4c2-.3 3.7.8 4.6 2.3C10.9 4.8 12.6 3.7 14.6 4c3.4.5 4.7 4 3 7.2C15 15.6 12 20 12 20Z"/></svg>`,
+    doc: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg>`,
+    lock: c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+    settings: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.5 1Z"/></svg>`,
+    help: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .8-1 1.7"/><path d="M12 17h.01"/></svg>`,
+    logout: c => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>`,
+    signal: c => `<svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="${c}"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="${c}"/><rect x="9" y="3" width="3" height="8" rx="0.5" fill="${c}"/><rect x="13" y="0" width="3" height="11" rx="0.5" fill="${c}"/></svg>`,
+    wifi: c => `<svg width="16" height="12" viewBox="0 0 24 18" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M2 6.5a16 16 0 0 1 20 0"/><path d="M5.5 10.8a11 11 0 0 1 13 0"/><path d="M9.2 14.8a5.6 5.6 0 0 1 5.6 0"/><circle cx="12" cy="17.2" r="0.6" fill="${c}"/></svg>`,
+    battery: c => `<svg width="24" height="12" viewBox="0 0 24 12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" fill="none" stroke="${c}" stroke-width="1.2"/><rect x="2" y="2" width="17" height="8" rx="1.2" fill="${c}"/><rect x="21.5" y="4" width="2" height="4" rx="1" fill="${c}"/></svg>`
+  };
+
+  /* ================= USE CASE DATA ================= */
+  const USE_CASES = [
+    {
+      id:"ansinh", name:"Trợ cấp hộ nghèo / yếu thế", issuer:"Bộ Lao động - Thương binh và Xã hội",
+      icon:"rice", color:"#1f6fd6", grad:"linear-gradient(135deg,#1f6fd6,#123f7a)",
+      lockNote:"Chỉ dùng để mua lương thực, thuốc men, đồ thiết yếu tại merchant liên kết.",
+      merchants:["Siêu thị An Bình","Cửa hàng thực phẩm Tâm Đức","Nhà thuốc Thành Tín","Chợ dân sinh Phú Mỹ"],
+      defaultValue:300000
+    },
+    {
+      id:"letet", name:"Quà tặng dịp Lễ / Tết", issuer:"UBND phường/xã (địa phương)",
+      icon:"gift", color:"#d0263a", grad:"linear-gradient(135deg,#d0263a,#7a1120)",
+      lockNote:"Đổi lấy quà theo danh mục do địa phương phê duyệt, thay cho phong bì/quà giấy truyền thống.",
+      merchants:["Siêu thị An Bình","Cửa hàng quà tặng Hoa Mai","Trung tâm thương mại Sao Việt"],
+      defaultValue:200000
+    },
+    {
+      id:"khamsuckhoe", name:"Khám sức khỏe dự phòng", issuer:"Sở Y tế địa phương",
+      icon:"heart", color:"#1e9e6b", grad:"linear-gradient(135deg,#1e9e6b,#0e5c3f)",
+      lockNote:"Chỉ dùng tại cơ sở y tế / nhà thuốc liên kết, không quy đổi thành tiền mặt.",
+      merchants:["Nhà thuốc Thành Tín","Phòng khám Đa khoa Tâm An","Bệnh viện Đa khoa Bình Minh"],
+      defaultValue:500000
+    }
+  ];
+
+  /* ================= STATE ================= */
+  let selectedUseCaseId = USE_CASES[0].id;
+  let vouchers = [];      // {id, useCaseId, value, benefName, status, issuedAt, usedAt, usedMerchant}
+  let notifications = []; // {id, voucherId, read, time}
+  let voucherSeq = 1;
+  let navStack = ["home"];  // last item = current screen; each item: string or {name, param}
+  let walletFilter = "active";
+  let selectedMerchantForUse = null;
+
+  function currentUC(){ return USE_CASES.find(u => u.id === selectedUseCaseId); }
+  function ucById(id){ return USE_CASES.find(u => u.id === id); }
+  function voucherById(id){ return vouchers.find(v => v.id === id); }
+
+  function fmtVND(n){ return n.toLocaleString("vi-VN") + "đ"; }
+  function fmtTime(d){ return d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"}); }
+  function fmtDate(d){ return d.toLocaleDateString("vi-VN"); }
+  function timeAgo(d){
+    const s = Math.floor((Date.now()-d.getTime())/1000);
+    if (s<60) return "vừa xong";
+    if (s<3600) return Math.floor(s/60)+" phút trước";
+    return Math.floor(s/3600)+" giờ trước";
+  }
+
+  /* ================= NAV HELPERS ================= */
+  function go(screen, param){
+    navStack.push(param!==undefined ? {name:screen, param} : screen);
+    render();
+  }
+  function goRoot(screen){
+    navStack = [screen];
+    render();
+  }
+  function goBack(){
+    if (navStack.length>1) navStack.pop();
+    render();
+  }
+  function current(){
+    const top = navStack[navStack.length-1];
+    return typeof top === "string" ? {name:top, param:undefined} : top;
+  }
+
+  /* ================= STATUS BAR ================= */
+  function tickClock(){
+    document.getElementById("clock").textContent = fmtTime(new Date());
+  }
+  function renderStatusIcons(){
+    document.getElementById("iconSlot-signal").innerHTML = ICON.signal("#0f1a2b");
+    document.getElementById("iconSlot-wifi").innerHTML = ICON.wifi("#0f1a2b");
+    document.getElementById("iconSlot-battery").innerHTML = ICON.battery("#0f1a2b");
+  }
+
+  /* ================= TOP BAR ================= */
+  function renderTopbar(){
+    const {name} = current();
+    const slot = document.getElementById("topbarSlot");
+    const titles = {home:null, notifications:"Thông báo", wallet:"Ví voucher &amp; trợ cấp", account:"Tài khoản",
+      voucherDetail:"Chi tiết voucher", qr:"Sử dụng voucher", success:null};
+    if (name === "home" || name === "success"){ slot.innerHTML = ""; return; }
+    const showBack = ["voucherDetail","qr"].includes(name);
+    slot.innerHTML = `<div class="app-topbar">
+      ${showBack ? `<div class="back-btn" onclick="AppSim.back()">${ICON.back("#0f1a2b")}</div>` : `<div style="width:30px;"></div>`}
+      <h2>${titles[name] || ""}</h2>
+      <div style="width:30px;"></div>
+    </div>`;
+  }
+
+  /* ================= BOTTOM NAV ================= */
+  function renderBottomNav(){
+    const {name} = current();
+    const rootScreens = ["home","notifications","wallet","account"];
+    if (!rootScreens.includes(name)) { document.getElementById("bottomNav").style.display = "none"; return; }
+    document.getElementById("bottomNav").style.display = "flex";
+    const unreadCount = notifications.filter(n=>!n.read).length;
+    const activeVoucherCount = vouchers.filter(v=>v.status==="active").length;
+    const items = [
+      {id:"home", label:"Trang chủ", icon:"home", badge:false},
+      {id:"notifications", label:"Thông báo", icon:"bell", badge:unreadCount>0},
+      {id:"wallet", label:"Ví voucher", icon:"ticket", badge:activeVoucherCount>0 && name!=="wallet"},
+      {id:"account", label:"Tài khoản", icon:"user", badge:false}
+    ];
+    document.getElementById("bottomNav").innerHTML = items.map(it => `
+      <div class="nav-item ${name===it.id?'active':''} ${it.badge?'has-badge':''}" onclick="AppSim.goRoot('${it.id}')">
+        <span class="badge-dot"></span>
+        ${ICON[it.icon](name===it.id? "#1f6fd6":"#9aa8ba")}
+        <span>${it.label}</span>
+      </div>`).join("");
+  }
+
+  /* ================= SCREENS ================= */
+  function screenHome(){
+    const activeVouchers = vouchers.filter(v=>v.status==="active");
+    return `
+      <div class="id-card">
+        <div class="stripe"></div>
+        <div class="row">
+          <div class="avatar">NA</div>
+          <div>
+            <div class="name">${document.getElementById("benefName") ? document.getElementById("benefName").value : "Nguyễn Văn A"}</div>
+            <div class="idnum">Số định danh: 079xxx****231</div>
+          </div>
+        </div>
+        <div class="verify-chip">${ICON.shield("#8fe6bd")} Đã định danh mức 2 qua VNeID</div>
+      </div>
+
+      <div class="section-title">Truy cập nhanh</div>
+      <div class="quick-grid">
+        <div class="quick-item" onclick="AppSim.goRoot('wallet')">
+          <div class="qi-ic" style="background:#e8f1fd;">${ICON.ticket("#1f6fd6")}</div>
+          Ví voucher
+        </div>
+        <div class="quick-item" onclick="AppSim.goRoot('notifications')">
+          <div class="qi-ic" style="background:#fdeee9;">${ICON.bell("#d0263a")}</div>
+          Thông báo
+        </div>
+        <div class="quick-item">
+          <div class="qi-ic" style="background:#eaf7ef;">${ICON.doc("#1e9e6b")}</div>
+          Dịch vụ công
+        </div>
+        <div class="quick-item" onclick="AppSim.goRoot('account')">
+          <div class="qi-ic" style="background:#fdf3de;">${ICON.user("#b8790a")}</div>
+          Tài khoản
+        </div>
+      </div>
+
+      ${activeVouchers.length ? `
+      <div class="promo-card" onclick="AppSim.goRoot('wallet')">
+        <div class="pc-ic">${ICON.gift("#5b3d00")}</div>
+        <div>
+          <div class="pc-title">Bạn có ${activeVouchers.length} voucher khả dụng</div>
+          <div class="pc-sub">Chạm để mở ví voucher &amp; sử dụng ngay</div>
+        </div>
+      </div>` : ""}
+
+      <div class="section-title">Trợ cấp / an sinh gần đây<span class="more" onclick="AppSim.goRoot('wallet')">Xem tất cả</span></div>
+      ${vouchers.length===0 ? `<div class="empty-hint">Chưa có trợ cấp nào được cấp qua VNeID.<br>Dùng bảng điều khiển bên phải để mô phỏng.</div>` :
+        vouchers.slice(0,2).map(v => voucherRowMini(v)).join("")}
+    `;
+  }
+
+  function voucherRowMini(v){
+    const uc = ucById(v.useCaseId);
+    return `<div class="v-card" onclick="AppSim.go('voucherDetail','${v.id}')">
+      <div class="vc-ic" style="background:${uc.color}1a;">${ICON[uc.icon](uc.color)}</div>
+      <div style="flex:1;">
+        <div class="vc-title">${uc.name}</div>
+        <div class="vc-issuer">${uc.issuer}</div>
+        <div class="vc-value">${fmtVND(v.value)}</div>
+      </div>
+      ${statusChip(v.status)}
+    </div>`;
+  }
+
+  function statusChip(status){
+    const map = {active:["active","Khả dụng"], used:["used","Đã dùng"], expired:["expired","Hết hạn"]};
+    const [cls,label] = map[status];
+    return `<span class="status-chip ${cls}">${label}</span>`;
+  }
+
+  function screenNotifications(){
+    if (notifications.length===0){
+      return `<div class="empty-hint">Chưa có thông báo nào.<br>Hãy cấp voucher mới từ bảng điều khiển.</div>`;
+    }
+    return notifications.map(n => {
+      const v = voucherById(n.voucherId);
+      const uc = ucById(v.useCaseId);
+      return `<div class="noti-item ${n.read?'':'unread'}" onclick="AppSim.openNotification('${n.id}')">
+        ${!n.read ? `<span class="unread-dot"></span>` : `<span style="width:7px;"></span>`}
+        <div class="ni-ic">${ICON[uc.icon](uc.color)}</div>
+        <div style="flex:1;">
+          <div class="ni-title">Bạn được cấp voucher ${uc.name.toLowerCase()}</div>
+          <div class="ni-sub">Mệnh giá ${fmtVND(v.value)} từ ${uc.issuer}. Đã gửi vào tài khoản định danh VNeID.</div>
+          <div class="ni-time">${timeAgo(n.time)}</div>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  function screenWallet(){
+    const filtered = vouchers.filter(v=>v.status===walletFilter);
+    return `
+      <div class="seg">
+        <button class="${walletFilter==='active'?'active':''}" onclick="AppSim.setWalletFilter('active')">Khả dụng</button>
+        <button class="${walletFilter==='used'?'active':''}" onclick="AppSim.setWalletFilter('used')">Đã dùng</button>
+        <button class="${walletFilter==='expired'?'active':''}" onclick="AppSim.setWalletFilter('expired')">Hết hạn</button>
+      </div>
+      ${filtered.length===0 ? `<div class="empty-hint">Không có voucher nào ở mục này.</div>` :
+        filtered.map(v => {
+          const uc = ucById(v.useCaseId);
+          return `<div class="v-card" onclick="AppSim.go('voucherDetail','${v.id}')">
+            <div class="vc-ic" style="background:${uc.color}1a;">${ICON[uc.icon](uc.color)}</div>
+            <div style="flex:1;">
+              <div class="vc-title">${uc.name}</div>
+              <div class="vc-issuer">${uc.issuer}</div>
+              <div class="vc-value">${fmtVND(v.value)}</div>
+              <div class="vc-lock">${ICON.lock("#b8790a")} Khóa mục đích</div>
+            </div>
+            ${statusChip(v.status)}
+          </div>`;
+        }).join("")}
+    `;
+  }
+
+  function screenVoucherDetail(voucherId){
+    const v = voucherById(voucherId);
+    if (!v) return `<div class="empty-hint">Không tìm thấy voucher.</div>`;
+    const uc = ucById(v.useCaseId);
+    return `
+      <div class="voucher-hero" style="background:${uc.grad};">
+        <div class="vh-stripe"></div>
+        <div class="vh-tag">${uc.name}</div>
+        <div class="vh-value">${fmtVND(v.value)}</div>
+        <div class="vh-title">Phát hành bởi ${uc.issuer}</div>
+        <div class="vh-id">Mã voucher: ${v.id}</div>
+      </div>
+
+      <div class="detail-block">
+        <h4>Thông tin đợt cấp</h4>
+        <div class="kv-row"><span>Người thụ hưởng</span><span>${v.benefName}</span></div>
+        <div class="kv-row"><span>Ngày cấp</span><span>${fmtDate(v.issuedAt)}</span></div>
+        <div class="kv-row"><span>Hạn sử dụng</span><span>30 ngày kể từ ngày cấp</span></div>
+        <div class="kv-row"><span>Trạng thái</span><span>${statusChip(v.status)}</span></div>
+      </div>
+
+      <div class="detail-block">
+        <h4>Điều kiện sử dụng (khóa mục đích)</h4>
+        <ul class="bullet-list">
+          <li>${uc.lockNote}</li>
+          <li>Xác thực bằng định danh VNeID, không thể chuyển nhượng hoặc quy đổi tiền mặt.</li>
+          <li>Đối soát tự động về cơ quan quản lý sau khi sử dụng.</li>
+        </ul>
+        <h4 style="margin-top:14px;">Merchant áp dụng</h4>
+        <div class="chip-row">${uc.merchants.map(m=>`<span class="chip">${m}</span>`).join("")}</div>
+      </div>
+
+      ${v.status==="active" ? `
+        <button class="primary-btn" onclick="AppSim.go('qr','${v.id}')">Sử dụng voucher ngay</button>
+      ` : v.status==="used" ? `
+        <div class="used-note">${ICON.check("#1e9e6b")}<span>Đã sử dụng tại <b>${v.usedMerchant}</b> lúc ${fmtTime(v.usedAt)} ngày ${fmtDate(v.usedAt)}. Voucher đã bị khóa, không thể dùng lại.</span></div>
+      ` : `<div class="used-note" style="background:#fbe9e9;color:var(--red);">Voucher đã hết hạn sử dụng.</div>`}
+    `;
+  }
+
+  function qrCells(seed){
+    // deterministic pseudo-random pattern for a "QR-like" visual, purely decorative
+    let cells = "";
+    let s = seed;
+    for (let i=0;i<121;i++){
+      s = (s*9301+49297) % 233280;
+      const on = (s/233280) > 0.46;
+      // keep corners solid to look like real QR finder patterns
+      const r = Math.floor(i/11), c = i%11;
+      const inCorner = (r<3&&c<3)||(r<3&&c>7)||(r>7&&c<3);
+      cells += `<i class="${(on||inCorner) ? '' : 'off'}"></i>`;
+    }
+    return cells;
+  }
+
+  function screenQr(voucherId){
+    const v = voucherById(voucherId);
+    if (!v) return `<div class="empty-hint">Không tìm thấy voucher.</div>`;
+    const uc = ucById(v.useCaseId);
+    let seed = 0;
+    for (const ch of v.id) seed += ch.charCodeAt(0);
+    return `
+      <div class="qr-wrap">
+        <div style="font-size:13px;color:var(--muted);margin-bottom:2px;">Đưa mã này cho merchant quét</div>
+        <div class="qr-box">${qrCells(seed)}</div>
+        <div style="font-size:16px;font-weight:700;margin-top:14px;color:var(--navy);">${fmtVND(v.value)}</div>
+        <div class="qr-timer">Mã có hiệu lực trong <b id="qrCountdown">04:59</b></div>
+
+        <div class="field">
+          <label>Mô phỏng: chọn merchant đang quét mã</label>
+          <select id="merchantSelect" onchange="AppSim.setMerchantForUse(this.value)">
+            <option value="">-- Chọn merchant --</option>
+            ${uc.merchants.map(m=>`<option value="${m}">${m}</option>`).join("")}
+          </select>
+        </div>
+        <button class="primary-btn" id="confirmUseBtn" onclick="AppSim.confirmUse('${v.id}')" disabled>Xác nhận đã thanh toán</button>
+      </div>
+    `;
+  }
+
+  function screenSuccess(voucherId){
+    const v = voucherById(voucherId);
+    const uc = ucById(v.useCaseId);
+    return `
+      <div class="success-wrap">
+        <div class="check-circle">${ICON.check("#1e9e6b")}</div>
+        <h3>Sử dụng voucher thành công!</h3>
+        <p>Voucher ${fmtVND(v.value)} (${uc.name.toLowerCase()}) đã được dùng tại <b>${v.usedMerchant}</b>.
+        Kết quả đã được đối soát về ${uc.issuer}.</p>
+        <button class="primary-btn" style="max-width:220px;" onclick="AppSim.goRoot('wallet')">Về ví voucher</button>
+      </div>
+    `;
+  }
+
+  function screenAccount(){
+    const rows = [
+      {icon:"settings", label:"Cài đặt tài khoản"},
+      {icon:"shield", label:"Bảo mật &amp; định danh"},
+      {icon:"help", label:"Trợ giúp"},
+      {icon:"logout", label:"Đăng xuất"}
+    ];
+    return `
+      <div class="id-card">
+        <div class="stripe"></div>
+        <div class="row">
+          <div class="avatar">NA</div>
+          <div>
+            <div class="name">${document.getElementById("benefName") ? document.getElementById("benefName").value : "Nguyễn Văn A"}</div>
+            <div class="idnum">SĐT: 09xx xxx 231 · CCCD: 079xxx****231</div>
+          </div>
+        </div>
+      </div>
+      <div class="section-title">Cài đặt</div>
+      ${rows.map(r=>`<div class="profile-row"><div class="vc-ic" style="width:34px;height:34px;background:#eef3fb;">${ICON[r.icon]("#1f6fd6")}</div><div class="pr-label">${r.label}</div>${ICON.chevron("#c3ccd8")}</div>`).join("")}
+      <p class="disclaimer" style="margin-top:18px;">Đây là màn hình tài khoản minh họa, không chứa dữ liệu thật.</p>
+    `;
+  }
+
+  /* ================= RENDER MAIN ================= */
+  function render(){
+    const {name, param} = current();
+    let html = "";
+    if (name==="home") html = screenHome();
+    else if (name==="notifications") html = screenNotifications();
+    else if (name==="wallet") html = screenWallet();
+    else if (name==="account") html = screenAccount();
+    else if (name==="voucherDetail") html = screenVoucherDetail(param);
+    else if (name==="qr") html = screenQr(param);
+    else if (name==="success") html = screenSuccess(param);
+    document.getElementById("screenBody").innerHTML = html;
+    document.getElementById("screenBody").scrollTop = 0;
+    renderTopbar();
+    renderBottomNav();
+    if (name==="qr") startQrCountdown();
+  }
+
+  let qrTimerHandle = null;
+  function startQrCountdown(){
+    if (qrTimerHandle) clearInterval(qrTimerHandle);
+    let remaining = 299;
+    const el = document.getElementById("qrCountdown");
+    qrTimerHandle = setInterval(() => {
+      remaining--;
+      if (!document.getElementById("qrCountdown")) { clearInterval(qrTimerHandle); return; }
+      const m = String(Math.floor(remaining/60)).padStart(2,"0");
+      const s = String(remaining%60).padStart(2,"0");
+      document.getElementById("qrCountdown").textContent = m+":"+s;
+      if (remaining<=0) clearInterval(qrTimerHandle);
+    }, 1000);
+  }
+
+  /* ================= PUSH NOTIFICATION OVERLAY ================= */
+  function firePushToast(voucher, uc){
+    document.getElementById("iconSlot-push").innerHTML = ICON.bell("#fff");
+    document.getElementById("pushTitle").textContent = "VNeID • Trợ cấp an sinh";
+    document.getElementById("pushBody").textContent = `Bạn được cấp voucher ${uc.name.toLowerCase()} - ${fmtVND(voucher.value)}`;
+    const toast = document.getElementById("pushToast");
+    toast.onclick = () => {
+      toast.classList.remove("show");
+      markNotificationRead(voucher.id);
+      go("voucherDetail", voucher.id);
+    };
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 4500);
+  }
+
+  function markNotificationRead(voucherId){
+    const n = notifications.find(n=>n.voucherId===voucherId);
+    if (n) n.read = true;
+  }
+
+  /* ================= CONTROL PANEL ================= */
+  function renderUcGrid(){
+    document.getElementById("ucGrid").innerHTML = USE_CASES.map(uc => `
+      <div class="uc-item ${uc.id===selectedUseCaseId?'selected':''}" onclick="AppSim.selectUC('${uc.id}')">
+        <div class="uc-ic" style="background:${uc.color}22;">${ICON[uc.icon](uc.color)}</div>
+        <div>
+          <div class="uc-name">${uc.name}</div>
+          <div class="uc-desc">${uc.issuer}</div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function selectUC(id){
+    selectedUseCaseId = id;
+    document.getElementById("benefValue").value = currentUC().defaultValue;
+    renderUcGrid();
+  }
+
+  function issueVoucher(){
+    const uc = currentUC();
+    const name = document.getElementById("benefName").value.trim() || "Nguyễn Văn A";
+    const value = parseInt(document.getElementById("benefValue").value,10) || uc.defaultValue;
+    const v = {
+      id: "VC-"+String(voucherSeq++).padStart(4,"0"),
+      useCaseId: uc.id,
+      value, benefName: name,
+      status: "active",
+      issuedAt: new Date(),
+      usedAt: null, usedMerchant: null
+    };
+    vouchers.unshift(v);
+    notifications.unshift({id:"NT-"+v.id, voucherId:v.id, read:false, time:new Date()});
+    document.getElementById("statusLine").innerHTML = `Đã cấp <b>${v.id}</b> (${fmtVND(value)}) cho ${name} qua VNeID.`;
+    firePushToast(v, uc);
+    if (["home","notifications","wallet"].includes(current().name)) render();
+    else renderBottomNav();
+  }
+
+  function resetSim(){
+    vouchers = []; notifications = []; voucherSeq = 1;
+    walletFilter = "active";
+    navStack = ["home"];
+    document.getElementById("statusLine").textContent = "Đã đặt lại mô phỏng.";
+    render();
+  }
+
+  function confirmUse(voucherId){
+    const v = voucherById(voucherId);
+    if (!v || !selectedMerchantForUse) return;
+    v.status = "used";
+    v.usedAt = new Date();
+    v.usedMerchant = selectedMerchantForUse;
+    selectedMerchantForUse = null;
+    goRoot("wallet");
+    navStack = ["wallet", {name:"success", param:v.id}];
+    render();
+  }
+
+  function setMerchantForUse(m){
+    selectedMerchantForUse = m || null;
+    const btn = document.getElementById("confirmUseBtn");
+    if (btn) btn.disabled = !selectedMerchantForUse;
+  }
+
+  /* ================= EXPOSE ================= */
+  window.AppSim = {
+    go, goRoot, back: goBack,
+    openNotification: (ntId) => {
+      const n = notifications.find(n=>n.id===ntId);
+      if (!n) return;
+      n.read = true;
+      go("voucherDetail", n.voucherId);
+    },
+    setWalletFilter: (f) => { walletFilter = f; render(); },
+    selectUC, issueVoucher, resetSim, confirmUse, setMerchantForUse
+  };
+
+  /* ================= INIT ================= */
+  document.getElementById("issueBtn").addEventListener("click", issueVoucher);
+  document.getElementById("resetBtn").addEventListener("click", resetSim);
+  renderUcGrid();
+  renderStatusIcons();
+  tickClock();
+  setInterval(tickClock, 1000*20);
+  render();
+
+})();
+</script>
+</body>
+</html>

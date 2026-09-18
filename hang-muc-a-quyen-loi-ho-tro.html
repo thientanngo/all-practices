@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mockup minh họa: Quyền lợi và Hỗ trợ</title>
+<style>
+  :root{
+    --ink:#1a2230; --muted:#6b7787; --line:#e3e7ee; --bg-app:#f6f7f9; --card:#ffffff;
+    --primary:#3d6a63; --primary-2:#274a44; --primary-soft:#e4eeec;
+    --accent:#8a6d3b; --accent-soft:#f3ecdf;
+    --warn:#b3541e; --warn-bg:#fdefe3;
+    --ok:#2f7a52; --ok-bg:#e7f5ec;
+    --danger:#a63a3a; --danger-bg:#fbe9e9;
+    --page-bg:#11161d;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:radial-gradient(1100px 550px at 12% -10%, #1b2430 0%, var(--page-bg) 55%) fixed;
+    color:#e7ecf2; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:0 0 50px;
+  }
+  .banner-warning{
+    text-align:center;font-size:12.5px;font-weight:600;color:#3a2405;
+    background:repeating-linear-gradient(135deg,#f0b93a,#f0b93a 10px,#e8a91c 10px,#e8a91c 20px);
+    padding:9px 14px;letter-spacing:.01em;
+  }
+  header.hd{max-width:1220px;margin:0 auto;padding:28px 20px 8px;}
+  header.hd .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#c9d6d3;
+    background:rgba(61,106,99,.25);border:1px solid rgba(61,106,99,.5);padding:4px 10px;border-radius:999px;margin-bottom:12px;
+  }
+  header.hd h1{font-size:clamp(20px,2.6vw,27px);margin:0 0 8px;}
+  header.hd p{color:#9aa7b6;max-width:820px;margin:0;font-size:13.8px;line-height:1.6;}
+  header.hd p.legal{color:#e0a15c;margin-top:10px;font-size:12.6px;}
+
+  .stage{max-width:1220px;margin:0 auto;padding:24px 20px 0;display:grid;grid-template-columns:400px 1fr;gap:26px;align-items:start;}
+  @media (max-width:960px){.stage{grid-template-columns:1fr;}}
+
+  /* ===== DEVICE COLUMN ===== */
+  .device-col{display:flex;flex-direction:column;align-items:center;position:sticky;top:20px;}
+  .device-label{font-size:12px;color:#8b98a8;margin-bottom:10px;text-align:center;max-width:340px;}
+  .device-label b{color:#dfe6ee;}
+
+  .phone{width:352px;height:740px;background:#111;border-radius:42px;padding:12px;position:relative;
+    box-shadow:0 26px 55px rgba(0,0,0,.5), inset 0 0 0 2px #262e38;}
+  .phone.merchant{background:#1c1710;box-shadow:0 26px 55px rgba(0,0,0,.5), inset 0 0 0 2px #3a2f1c;}
+  .kiosk{width:380px;height:740px;background:#15181d;border-radius:20px;padding:12px;position:relative;
+    box-shadow:0 26px 55px rgba(0,0,0,.5), inset 0 0 0 2px #2a2f36;}
+
+  .device-screen{width:100%;height:100%;background:var(--bg-app);border-radius:30px;overflow:hidden;position:relative;
+    display:flex;flex-direction:column;color:var(--ink);}
+  .kiosk .device-screen{border-radius:12px;}
+  .notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:20px;background:#111;border-radius:0 0 14px 14px;z-index:40;}
+
+  .persist-banner{
+    flex-shrink:0;background:repeating-linear-gradient(135deg,#f0b93a,#f0b93a 8px,#e8a91c 8px,#e8a91c 16px);
+    color:#3a2405;font-size:9.6px;font-weight:700;text-align:center;padding:5px 8px;line-height:1.35;
+  }
+  .status-bar{display:flex;justify-content:space-between;align-items:center;padding:8px 20px 4px;font-size:12px;font-weight:600;flex-shrink:0;}
+  .status-bar .icons{display:flex;gap:5px;align-items:center;}
+  .id-placeholder{
+    margin:8px 16px 0;padding:6px 10px;background:#eceef1;border:1px dashed #b9c1cc;border-radius:8px;
+    font-size:10px;color:#7a8494;text-align:center;
+  }
+
+  .app-topbar{display:flex;align-items:center;gap:10px;padding:8px 16px 12px;flex-shrink:0;background:var(--bg-app);}
+  .app-topbar .back-btn{width:29px;height:29px;border-radius:50%;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+  .app-topbar h2{font-size:16.5px;margin:0;flex:1;}
+
+  .screen-body{flex:1;overflow-y:auto;padding:0 16px 90px;}
+  .screen-body::-webkit-scrollbar{width:0;}
+  .kiosk .screen-body{padding:0 20px 20px;}
+
+  .bottom-nav{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+    display:flex;padding:8px 4px 12px;z-index:20;}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#9aa8ba;cursor:pointer;
+    font-size:10px;position:relative;padding:4px 0;}
+  .nav-item.active{color:var(--primary);}
+  .nav-item .badge-dot{position:absolute;top:-1px;right:calc(50% - 15px);width:7px;height:7px;border-radius:50%;
+    background:var(--accent);border:1.5px solid #fff;display:none;}
+  .nav-item.has-badge .badge-dot{display:block;}
+
+  .push-toast{position:absolute;top:44px;left:10px;right:10px;background:rgba(20,26,36,.95);color:#fff;border-radius:14px;
+    padding:10px 12px;display:flex;gap:9px;align-items:flex-start;z-index:60;transform:translateY(-140px);opacity:0;
+    transition:transform .35s ease, opacity .35s ease;cursor:pointer;box-shadow:0 12px 26px rgba(0,0,0,.35);}
+  .push-toast.show{transform:translateY(0);opacity:1;}
+  .push-toast .pt-icon{width:28px;height:28px;border-radius:8px;background:var(--primary);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;}
+  .push-toast .pt-title{font-size:12px;font-weight:700;}
+  .push-toast .pt-body{font-size:11.5px;color:#c7d1de;line-height:1.4;}
+
+  /* ===== INTRO OVERLAY (mandatory) ===== */
+  .intro-overlay{position:absolute;inset:0;background:#0f1520;color:#e7ecf2;z-index:80;padding:26px 20px;
+    display:flex;flex-direction:column;overflow-y:auto;border-radius:30px;}
+  .kiosk .intro-overlay{border-radius:12px;}
+  .intro-overlay .tag{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#f0b93a;margin-bottom:10px;}
+  .intro-overlay h3{font-size:16px;margin:0 0 12px;line-height:1.4;}
+  .intro-overlay p{font-size:12.3px;color:#aab6c4;line-height:1.65;margin:0 0 10px;}
+  .intro-overlay ul{font-size:12px;color:#aab6c4;line-height:1.7;padding-left:18px;margin:0 0 14px;}
+  .intro-overlay .gov-placeholder{margin:6px 0 16px;padding:14px;border:1.5px dashed #4a5566;border-radius:10px;
+    text-align:center;font-size:11px;color:#7c8a9c;}
+  .intro-overlay button{margin-top:auto;background:var(--primary);color:#fff;border:none;border-radius:12px;
+    padding:13px;font-size:13.5px;font-weight:700;cursor:pointer;}
+
+  /* ===== CONTENT PIECES ===== */
+  .id-card{background:linear-gradient(135deg,var(--primary),var(--primary-2));border-radius:16px;padding:16px;
+    color:#fff;margin:12px 0 14px;position:relative;overflow:hidden;}
+  .id-card .stripe{position:absolute;right:-30px;top:-30px;width:130px;height:130px;background:rgba(255,255,255,.06);border-radius:50%;}
+  .id-card .row{display:flex;align-items:center;gap:12px;}
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;}
+  .id-card .name{font-size:15px;font-weight:700;}
+  .id-card .idnum{font-size:11.5px;color:#cfe0dc;margin-top:2px;}
+  .verify-chip{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;margin-top:9px;
+    background:rgba(255,255,255,.16);color:#e7f2ee;padding:4px 9px;border-radius:999px;}
+
+  .section-title{font-size:13px;font-weight:700;color:var(--ink);margin:16px 0 9px;display:flex;justify-content:space-between;align-items:center;}
+  .section-title .more{font-size:11.5px;color:var(--primary);font-weight:600;cursor:pointer;}
+
+  .quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+  .quick-item{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 4px;
+    display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;font-size:10.3px;text-align:center;position:relative;}
+  .quick-item .qi-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+  .qi-dot{position:absolute;top:6px;right:16px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+
+  .empty-hint{color:var(--muted);font-size:12.5px;text-align:center;padding:40px 10px;}
+
+  .b-card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:11px;
+    cursor:pointer;display:flex;gap:11px;align-items:flex-start;}
+  .b-card .bc-ic{width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .b-card .bc-title{font-size:13px;font-weight:700;}
+  .b-card .bc-issuer{font-size:10.8px;color:var(--muted);margin-top:1px;}
+  .b-card .bc-value{font-size:13px;font-weight:700;color:var(--primary-2);margin-top:6px;}
+  .status-chip{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;flex-shrink:0;white-space:nowrap;}
+  .status-chip.active{background:var(--ok-bg);color:var(--ok);}
+  .status-chip.used{background:#eef0f3;color:#7c8798;}
+  .status-chip.expired{background:var(--danger-bg);color:var(--danger);}
+  .status-chip.warn{background:var(--warn-bg);color:var(--warn);}
+
+  .hero{border-radius:18px;padding:18px;color:#fff;position:relative;overflow:hidden;margin-top:10px;}
+  .hero .h-stripe{position:absolute;right:-36px;bottom:-36px;width:150px;height:150px;background:rgba(255,255,255,.08);border-radius:50%;}
+  .hero .h-tag{font-size:10.5px;background:rgba(255,255,255,.18);display:inline-block;padding:3px 9px;border-radius:999px;margin-bottom:9px;}
+  .hero .h-value{font-size:21px;font-weight:800;}
+  .hero .h-sub{font-size:12px;margin-top:4px;opacity:.95;}
+  .hero .h-id{font-size:10.5px;margin-top:12px;opacity:.85;}
+
+  .detail-block{margin-top:14px;}
+  .detail-block h4{font-size:11.5px;color:var(--muted);margin:0 0 7px;text-transform:uppercase;letter-spacing:.02em;}
+  .kv-row{display:flex;justify-content:space-between;font-size:12.3px;padding:6px 0;border-bottom:1px dashed var(--line);}
+  .kv-row span:first-child{color:var(--muted);}
+  .kv-row span:last-child{font-weight:600;text-align:right;}
+  .bullet-list{margin:0;padding-left:17px;font-size:12px;line-height:1.65;}
+  .bullet-list.excl li{color:var(--danger);}
+  .sub-purse{background:#f7f8fa;border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;
+    display:flex;justify-content:space-between;align-items:center;}
+  .sub-purse .sp-name{font-size:12px;font-weight:600;}
+  .sub-purse .sp-value{font-size:12.5px;font-weight:700;color:var(--primary-2);}
+  .no-transfer-note{margin-top:8px;background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:9px 11px;
+    font-size:11px;display:flex;gap:7px;align-items:flex-start;}
+  .limit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+  .limit-box{background:#f7f8fa;border:1px solid var(--line);border-radius:10px;padding:9px 10px;text-align:center;}
+  .limit-box .lb-label{font-size:10px;color:var(--muted);}
+  .limit-box .lb-value{font-size:13.5px;font-weight:700;color:var(--ink);margin-top:2px;}
+
+  .primary-btn{width:100%;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:12px;
+    font-size:13.5px;font-weight:700;cursor:pointer;margin-top:16px;}
+  .primary-btn:disabled{background:#c7cdd6;cursor:not-allowed;}
+  .ghost-btn{width:100%;background:#fff;color:var(--primary);border:1.5px solid var(--primary);border-radius:12px;
+    padding:11px;font-size:13px;font-weight:700;cursor:pointer;margin-top:9px;}
+  .used-note{margin-top:14px;background:var(--ok-bg);color:var(--ok);border-radius:11px;padding:11px 13px;font-size:11.8px;
+    display:flex;gap:8px;align-items:flex-start;}
+
+  .merchant-row{display:flex;justify-content:space-between;align-items:center;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:9px;}
+  .merchant-row .mr-name{font-size:12.5px;font-weight:600;}
+  .merchant-row .mr-sub{font-size:10.8px;color:var(--muted);margin-top:2px;}
+  .map-box{height:110px;border-radius:12px;background:
+    linear-gradient(#eef1f4,#eef1f4) padding-box,
+    repeating-linear-gradient(0deg, #dfe4ea, #dfe4ea 1px, transparent 1px, transparent 24px),
+    repeating-linear-gradient(90deg, #dfe4ea, #dfe4ea 1px, transparent 1px, transparent 24px);
+    position:relative;margin-bottom:12px;border:1px solid var(--line);}
+  .map-pin{position:absolute;width:16px;height:16px;border-radius:50% 50% 50% 0;background:var(--primary);
+    transform:rotate(-45deg);}
+
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;margin-top:6px;}
+  .qr-box{width:176px;height:176px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px;
+    display:grid;grid-template-columns:repeat(11,1fr);grid-template-rows:repeat(11,1fr);gap:2px;}
+  .qr-box i{background:var(--ink);border-radius:1px;}
+  .qr-box i.off{background:transparent;}
+  .qr-timer{font-size:12px;color:var(--muted);margin-top:10px;}
+  .qr-timer b{color:var(--danger);}
+  .qr-note{font-size:10.8px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;}
+
+  .success-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:26px;}
+  .check-circle{width:70px;height:70px;border-radius:50%;background:var(--ok-bg);display:flex;align-items:center;justify-content:center;margin-bottom:15px;}
+  .success-wrap h3{font-size:15.5px;margin:0 0 6px;}
+  .success-wrap p{font-size:12px;color:var(--muted);margin:0;max-width:250px;}
+
+  .field{margin-top:14px;width:100%;}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;}
+  .field select, .field input{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);
+    font-size:13px;background:#fff;}
+
+  .hist-item{display:flex;justify-content:space-between;align-items:center;background:var(--card);
+    border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-bottom:8px;}
+  .hist-item .hi-title{font-size:12px;font-weight:600;}
+  .hist-item .hi-sub{font-size:10.5px;color:var(--muted);margin-top:2px;}
+  .hist-item .hi-value{font-size:12.5px;font-weight:700;}
+
+  /* ===== KIOSK (A8) ===== */
+  .kiosk-header{background:var(--primary-2);color:#fff;padding:14px 20px;font-size:13px;font-weight:700;flex-shrink:0;}
+  .kiosk-header .sub{font-weight:400;font-size:11px;color:#cfe0dc;margin-top:3px;}
+  .lookup-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px;}
+  .lookup-box input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;margin-top:6px;}
+  .paper-slip{margin-top:16px;background:#fff;border:1.5px dashed #b9c1cc;border-radius:4px;padding:16px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:#333;position:relative;}
+  .paper-slip .ps-title{font-weight:700;font-size:12.5px;text-align:center;margin-bottom:8px;border-bottom:1px dashed #ccc;padding-bottom:8px;}
+  .paper-slip .ps-row{display:flex;justify-content:space-between;padding:3px 0;}
+  .paper-slip .ps-code{text-align:center;margin:10px 0;font-size:15px;font-weight:700;letter-spacing:.12em;}
+  .paper-slip .ps-note{margin-top:8px;padding-top:8px;border-top:1px dashed #ccc;font-size:10.3px;color:#555;line-height:1.5;}
+
+  /* ===== CONTROL PANEL ===== */
+  .panel h2{font-size:17px;margin:0 0 4px;}
+  .panel .sub{color:#9db0c6;font-size:12.8px;margin:0 0 16px;}
+  .panel-card{background:linear-gradient(180deg,#131c25,#0f171f);border:1px solid #222d38;border-radius:16px;
+    padding:16px;margin-bottom:14px;}
+  .panel-card h3{margin:0 0 10px;font-size:13.5px;color:#dfe8f4;}
+  .step-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+  .step-btn{background:#0d151d;border:1.4px solid #223049;color:#aebccb;border-radius:9px;padding:8px 4px;
+    font-size:11px;text-align:center;cursor:pointer;font-weight:700;}
+  .step-btn.done{border-color:#2f7a52;color:#8fe6bd;}
+  .step-btn.active{border-color:var(--accent);color:#f0d9a8;background:#241d10;}
+  .step-desc{font-size:11.6px;color:#8fa3ba;margin-top:10px;line-height:1.55;min-height:34px;}
+  .nav-btns{display:flex;gap:8px;margin-top:10px;}
+  .nav-btns button{flex:1;background:#18222c;border:1px solid #2c3a4a;color:#dfe6ee;border-radius:9px;
+    padding:9px;font-size:12.5px;font-weight:600;cursor:pointer;}
+  .nav-btns button:disabled{opacity:.4;cursor:not-allowed;}
+  .persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .persona-item{background:#0d151d;border:1px solid #223049;border-radius:10px;padding:9px 10px;}
+  .persona-item .p-name{font-size:12px;font-weight:700;color:#e9eef6;}
+  .persona-item .p-desc{font-size:10.3px;color:#8b98a8;margin-top:3px;line-height:1.4;}
+  .mech-list{display:flex;flex-direction:column;gap:7px;}
+  .mech-item{display:flex;gap:8px;font-size:11.6px;color:#c3cddb;align-items:flex-start;}
+  .mech-item b{color:#f0d9a8;}
+  .disclaimer{font-size:11.2px;color:#6d7f96;line-height:1.65;margin-top:2px;}
+  .approve-note{font-size:11.5px;color:#e0a15c;margin-top:8px;line-height:1.55;}
+</style>
+</head>
+<body>
+
+<div class="banner-warning">BẢN MINH HỌA ĐỀ XUẤT · DO URBOX XÂY DỰNG · KHÔNG PHẢI SẢN PHẨM CHÍNH THỨC CỦA VNEID HAY BẤT KỲ CƠ QUAN NHÀ NƯỚC NÀO · CHƯA ĐƯỢC PHÊ DUYỆT</div>
+
+<header class="hd">
+  <span class="eyebrow">Hạng mục A · BRD-VBU-2026-001</span>
+  <h1>Mockup tương tác: tiện ích "Quyền lợi và Hỗ trợ"</h1>
+  <p>Kịch bản minh họa: <b style="color:#cfe0dc;">hỗ trợ dinh dưỡng cho mẹ và bé</b>. Bố cục và luồng thao tác được thiết kế
+  bằng hệ màu và hình khối trung tính của riêng bản demo này - không sao chép giao diện, màu sắc hay nhận diện của
+  ứng dụng định danh điện tử quốc gia hay bất kỳ cơ quan nhà nước nào. Dùng bảng điều khiển bên phải để đi qua từng
+  màn hình theo mạch kể chuyện A1 → A8, và luồng thiết bị merchant M1 → M4.</p>
+  <p class="legal">Người phê duyệt trước khi mang đi trình bày: Head of Voucher BU và Legal. Toàn bộ tên người, số định danh,
+  số điện thoại và merchant là dữ liệu giả lập, không đại diện cho cá nhân hay đối tác thật.</p>
+</header>
+
+<div class="stage">
+
+  <!-- ================= DEVICE COLUMN ================= -->
+  <div class="device-col" id="deviceCol">
+    <div class="device-label" id="deviceLabel"></div>
+    <div id="deviceMount"></div>
+  </div>
+
+  <!-- ================= CONTROL PANEL ================= -->
+  <div class="panel">
+    <h2>Bảng điều khiển trình diễn</h2>
+    <p class="sub">Bấm từng bước để đi qua trọn vẹn kịch bản, không cần thao tác trong điện thoại.</p>
+
+    <div class="panel-card">
+      <h3>Mạch kể chuyện (A1 → A8, M1 → M4)</h3>
+      <div class="step-grid" id="stepGrid"></div>
+      <div class="step-desc" id="stepDesc"></div>
+      <div class="nav-btns">
+        <button id="prevBtn">← Bước trước</button>
+        <button id="nextBtn">Bước tiếp →</button>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3>4 cơ chế bắt buộc thể hiện</h3>
+      <div class="mech-list">
+        <div class="mech-item">①<div><b>Nhiều nhóm mục đích con</b> trong một quyền lợi, không chuyển đổi giá trị qua lại (xem A3).</div></div>
+        <div class="mech-item">②<div><b>Hạn mức theo lần và theo tháng</b>, không phải một khoản chi tự do (xem A3, A5).</div></div>
+        <div class="mech-item">③<div><b>Nhóm hàng loại trừ</b> hiển thị rõ, không quy đổi tiền mặt (xem A3).</div></div>
+        <div class="mech-item">④<div><b>Phương án không dùng smartphone</b> qua cán bộ chương trình (xem A8).</div></div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3>Nhân vật trong kịch bản</h3>
+      <div class="persona-grid">
+        <div class="persona-item"><div class="p-name">Chị Lan</div><div class="p-desc">32 tuổi, công nhân KCN, con nhỏ 14 tháng, dùng Android tầm trung.</div></div>
+        <div class="persona-item"><div class="p-name">Bà Tư</div><div class="p-desc">68 tuổi, không dùng smartphone.</div></div>
+        <div class="persona-item"><div class="p-name">Anh Hùng</div><div class="p-desc">Chủ tạp hóa, merchant liên kết tại xã.</div></div>
+        <div class="persona-item"><div class="p-name">Cán bộ chương trình</div><div class="p-desc">Cấp huyện, theo dõi &amp; hỗ trợ tra cứu.</div></div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3>Ghi chú tuân thủ</h3>
+      <p class="disclaimer">
+      Không có chức năng chuyển nhượng, rút giá trị hay quy đổi tiền mặt ở bất kỳ màn hình nào (đúng ràng buộc R2).
+      Mọi số tiền hiển thị đều gắn kèm mục đích sử dụng, không đứng một mình như số dư ví điện tử. Nhãn cảnh báo
+      màu vàng ở đầu mỗi thiết bị không thể tắt và giữ nguyên khi xuất ảnh màn hình.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= ICONS ================= */
+  const ICON = {
+    home: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>`,
+    bell: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>`,
+    gift2: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M4 9h16v3H4z"/><path d="M12 9v11"/></svg>`,
+    user: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4S17.8 16.4 19 20"/></svg>`,
+    back: c => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`,
+    check: c => `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`,
+    shield: c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>`,
+    milk: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 4-2 2v10a2 2 0 0 1-2 2h0a2 2 0 0 1-2-2V9L8 7l1-4Z"/></svg>`,
+    doc: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg>`,
+    build: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-5 8 5v12"/><path d="M9 21v-6h6v6"/></svg>`,
+    car: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V9l2-4h12l2 4v7"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/></svg>`,
+    percent: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="17" r="2"/></svg>`,
+    pin: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11.5A7 7 0 0 1 19 9.5C19 14.5 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg>`,
+    lock: c => `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
+    warn: c => `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg>`,
+    scan: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M20 8V5a1 1 0 0 0-1-1h-3M4 16v3a1 1 0 0 0 1 1h3m12-4v3a1 1 0 0 1-1 1h-3"/><path d="M4 12h16"/></svg>`,
+    receipt: c => `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21V3Z"/><path d="M9 8h6M9 12h6"/></svg>`,
+    signal:c=>`<svg width="15" height="10" viewBox="0 0 16 11"><rect x="0" y="7" width="3" height="4" rx="0.5" fill="${c}"/><rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="${c}"/><rect x="9" y="3" width="3" height="8" rx="0.5" fill="${c}"/><rect x="13" y="0" width="3" height="11" rx="0.5" fill="${c}"/></svg>`,
+    wifi:c=>`<svg width="15" height="11" viewBox="0 0 24 18" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"><path d="M2 6.5a16 16 0 0 1 20 0"/><path d="M5.5 10.8a11 11 0 0 1 13 0"/><path d="M9.2 14.8a5.6 5.6 0 0 1 5.6 0"/><circle cx="12" cy="17.2" r="0.6" fill="${c}"/></svg>`,
+    battery:c=>`<svg width="22" height="11" viewBox="0 0 24 12"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" fill="none" stroke="${c}" stroke-width="1.2"/><rect x="2" y="2" width="17" height="8" rx="1.2" fill="${c}"/><rect x="21.5" y="4" width="2" height="4" rx="1" fill="${c}"/></svg>`
+  };
+
+  /* ================= DATA (dữ liệu giả lập) ================= */
+  function daysFromNow(n){ const d = new Date(); d.setDate(d.getDate()+n); return d; }
+
+  const BENEFITS = {
+    "QL-0001": {
+      id:"QL-0001", chuongTrinh:"Hỗ trợ dinh dưỡng mẹ và bé", coQuanCap:"[Chương trình an sinh cấp tỉnh - minh họa]",
+      icon:"milk", color:"#3d6a63",
+      hanDung: daysFromNow(25), status:"active",
+      nhomHangChoPhep:["Sữa và thực phẩm bổ sung cho trẻ dưới 24 tháng","Thực phẩm tươi sống, rau củ quả","Vitamin, khoáng chất cho mẹ và bé"],
+      nhomHangLoaiTru:["Đồ uống có cồn, thuốc lá","Hàng xa xỉ, mỹ phẩm cao cấp","Không quy đổi tiền mặt dưới mọi hình thức"],
+      nhomMucDich:[ {ten:"Sữa &amp; dinh dưỡng cho bé", giaTri:300000, conLai:300000}, {ten:"Khám dinh dưỡng định kỳ cho mẹ", giaTri:150000, conLai:150000} ],
+      hanMucLan:100000, hanMucThang:450000,
+      merchants:["Tạp hóa Cô Ba","Cửa hàng Mẹ và Bé Xanh","Nhà thuốc Thiện Tâm","Siêu thị Bình Yên"]
+    },
+    "QL-0002": {
+      id:"QL-0002", chuongTrinh:"Quyền lợi chăm lo đoàn viên công đoàn", coQuanCap:"[Công đoàn cơ sở - minh họa]",
+      icon:"gift2", color:"#8a6d3b",
+      hanDung: daysFromNow(5), status:"active",
+      nhomHangChoPhep:["Nhu yếu phẩm gia đình","Đồ dùng học tập cho con đoàn viên"],
+      nhomHangLoaiTru:["Rượu, bia, thuốc lá","Không quy đổi tiền mặt"],
+      nhomMucDich:[ {ten:"Nhu yếu phẩm", giaTri:100000, conLai:100000}, {ten:"Đồ dùng học tập", giaTri:50000, conLai:50000} ],
+      hanMucLan:70000, hanMucThang:150000,
+      merchants:["Siêu thị Bình Yên","Nhà sách Tri Thức Nhỏ"]
+    },
+    "QL-9001": {
+      id:"QL-9001", chuongTrinh:"Hỗ trợ dinh dưỡng người cao tuổi", coQuanCap:"[Chương trình an sinh cấp xã - minh họa]",
+      icon:"milk", color:"#3d6a63",
+      hanDung: daysFromNow(40), status:"active",
+      nhomHangChoPhep:["Thực phẩm dinh dưỡng cho người cao tuổi","Thuốc và vật tư y tế cơ bản"],
+      nhomHangLoaiTru:["Đồ uống có cồn, thuốc lá","Không quy đổi tiền mặt"],
+      nhomMucDich:[ {ten:"Dinh dưỡng hằng tháng", giaTri:250000, conLai:250000} ],
+      hanMucLan:80000, hanMucThang:250000,
+      merchants:["Nhà thuốc Thiện Tâm","Siêu thị Bình Yên"]
+    }
+  };
+
+  const history = [
+    {id:"GD-8841", chuongTrinh:"Hỗ trợ dinh dưỡng mẹ và bé", merchant:"Nhà thuốc Thiện Tâm", nhom:"Vitamin, khoáng chất cho mẹ và bé", giaTri:80000, time:daysFromNow(-6)},
+    {id:"GD-8790", chuongTrinh:"Hỗ trợ dinh dưỡng mẹ và bé", merchant:"Cửa hàng Mẹ và Bé Xanh", nhom:"Sữa và thực phẩm bổ sung cho trẻ", giaTri:95000, time:daysFromNow(-14)},
+    {id:"QL-7002", chuongTrinh:"Đợt hỗ trợ Tết thiếu nhi (đã hết hạn)", merchant:"-", nhom:"-", giaTri:0, time:daysFromNow(-40), expired:true}
+  ];
+
+  const baTu = {
+    ten:"Bà Tư", ma:"000000012345", dienThoai:"0900 000 000 (số hư cấu)",
+    benefitId:"QL-9001"
+  };
+
+  /* ================= STATE ================= */
+  let citizenNav = ["home"];      // navStack for phone
+  let walletHistoryFilter = "all";
+  let selectedMerchantForUse = null;
+  let mode = "citizen";           // 'citizen' | 'kiosk' | 'merchant'
+  let merchantStep = 1;
+  let merchantTxn = { benefitId:"QL-0001", giaTri:0, nhom:null };
+  let introDismissed = { citizen:false, kiosk:false, merchant:false };
+  let kioskLookupDone = false;
+  let kioskSlipPrinted = false;
+  let currentStepIdx = 0;
+
+  const STEPS = [
+    {id:"A1", label:"A1", title:"A1 · Trang chủ (mô phỏng)", desc:"Ô tiện ích \"Quyền lợi và Hỗ trợ\" nằm cùng cấp với các tiện ích khác, không chiếm chỗ đặc biệt.",
+      apply:()=>{ mode="citizen"; citizenNav=["home"]; }},
+    {id:"A2", label:"A2", title:"A2 · Danh sách quyền lợi", desc:"Hiển thị đồng thời nhiều quyền lợi từ nhiều chương trình khác nhau (FA-01). Mỗi quyền lợi gắn một mục đích rõ ràng.",
+      apply:()=>{ mode="citizen"; citizenNav=["home","benefits"]; }},
+    {id:"A3", label:"A3", title:"A3 · Chi tiết quyền lợi", desc:"Màn hình quan trọng nhất: nhóm hàng cho phép/loại trừ, nhiều nhóm mục đích con không chuyển đổi, hạn mức theo lần/tháng.",
+      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"}]; }},
+    {id:"A4", label:"A4", title:"A4 · Tìm điểm sử dụng", desc:"Danh sách merchant gần nhất - mạng lưới là tài sản UrBox mang lại.",
+      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"findMerchant",param:"QL-0001"}]; }},
+    {id:"A5", label:"A5", title:"A5 · Mã sử dụng", desc:"Mã động, đếm ngược 60 giây, tự đổi khi hết hiệu lực để chống chụp màn hình gửi người khác (FA-05).",
+      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"findMerchant",param:"QL-0001"},{name:"useCode",param:"QL-0001"}]; }},
+    {id:"A6", label:"A6", title:"A6 · Xác nhận đã dùng", desc:"Sau khi merchant xác nhận giao dịch (M3), người dân thấy ngay ngày giờ, merchant, nhóm hàng, giá trị và giá trị còn lại - minh bạch với người dân.",
+      apply:()=>{ mode="citizen"; citizenNav=["home","benefits",{name:"benefitDetail",param:"QL-0001"},{name:"confirmUse",param:"QL-0001"}]; }},
+    {id:"A7", label:"A7", title:"A7 · Lịch sử", desc:"Toàn bộ giao dịch, kể cả quyền lợi đã hết hạn.",
+      apply:()=>{ mode="citizen"; citizenNav=["home","history"]; }},
+    {id:"A8", label:"A8", title:"A8 · Không dùng smartphone", desc:"Bắt buộc có. Cán bộ chương trình tra cứu bằng mã định danh và in phiếu giấy có mã cho Bà Tư.",
+      apply:()=>{ mode="kiosk"; }},
+    {id:"M1", label:"M1", title:"M1 · Merchant quét mã", desc:"Anh Hùng (chủ tạp hóa) quét mã sử dụng của Chị Lan.",
+      apply:()=>{ mode="merchant"; merchantStep=1; }},
+    {id:"M2", label:"M2", title:"M2 · Kiểm tra hợp lệ", desc:"Hệ thống hiển thị quyền lợi này dùng được cho nhóm hàng nào, còn bao nhiêu.",
+      apply:()=>{ mode="merchant"; merchantStep=2; }},
+    {id:"M3", label:"M3", title:"M3 · Xác nhận giao dịch", desc:"Merchant nhập giá trị, chọn nhóm hàng, xác nhận. Không có bước nhập số tiền tự do vượt hạn mức/lần.",
+      apply:()=>{ mode="merchant"; merchantStep=3; }},
+    {id:"M4", label:"M4", title:"M4 · Biên nhận", desc:"Mã giao dịch, thời điểm quyết toán dự kiến. Merchant phải xuất hóa đơn cho giao dịch này - cầu nối sang Portal quản lý thuế (Hạng mục B).",
+      apply:()=>{ mode="merchant"; merchantStep=4; }}
+  ];
+
+  function fmt(n){ return n.toLocaleString("vi-VN"); }
+  function fmtDate(d){ return d.toLocaleDateString("vi-VN"); }
+  function fmtTime(d){ return d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"}); }
+  function daysLeft(d){ return Math.ceil((d.getTime()-Date.now())/86400000); }
+
+  function benefitStatusChip(b){
+    const dl = daysLeft(b.hanDung);
+    if (dl<=7) return `<span class="status-chip warn">${ICON.warn("#b3541e")} Còn ${dl} ngày</span>`;
+    return `<span class="status-chip active">Khả dụng</span>`;
+  }
+
+  /* ================= NAV HELPERS (citizen) ================= */
+  function cGo(name, param){ citizenNav.push(param!==undefined?{name,param}:name); render(); }
+  function cGoRoot(name){ citizenNav=[name]; render(); }
+  function cBack(){ if (citizenNav.length>1) citizenNav.pop(); render(); }
+  function cCurrent(){ const t = citizenNav[citizenNav.length-1]; return typeof t==="string" ? {name:t}:t; }
+
+  /* ================= PERSISTENT BANNER + STATUS BAR ================= */
+  function persistBannerHtml(){
+    return `<div class="persist-banner">BẢN MINH HỌA ĐỀ XUẤT - DO URBOX XÂY DỰNG.<br>KHÔNG PHẢI SẢN PHẨM CHÍNH THỨC CỦA VNEID HAY CƠ QUAN NHÀ NƯỚC.</div>`;
+  }
+  function statusBarHtml(){
+    return `<div class="status-bar"><span>08:00</span><div class="icons">${ICON.signal("#1a2230")}${ICON.wifi("#1a2230")}${ICON.battery("#1a2230")}</div></div>`;
+  }
+  function idPlaceholderHtml(){
+    return `<div class="id-placeholder">[ Vị trí nhận diện của cơ quan chủ quản ]</div>`;
+  }
+
+  /* ================= INTRO OVERLAYS ================= */
+  function introHtml(kind){
+    const common = `
+      <div class="tag">Trang mở đầu bắt buộc</div>
+      <h3>Đây là bản minh họa đề xuất do UrBox xây dựng</h3>
+      ${idPlaceholderHtml()}
+      <p>Nội dung tiếp theo mô phỏng <b>ý tưởng</b> đặt tiện ích "Quyền lợi và Hỗ trợ" trong một ứng dụng định danh điện tử,
+      để phục vụ trao đổi với cơ quan nhà nước. Đây <b>chưa</b> phải sản phẩm chính thức, <b>chưa</b> được bất kỳ cơ quan nào
+      phê duyệt, và <b>không</b> kết nối với hệ thống thật.</p>
+      <ul>
+        <li>Không sao chép giao diện, màu sắc hay biểu tượng của ứng dụng thật.</li>
+        <li>Không dùng Quốc huy, logo cơ quan nhà nước - vị trí nhận diện chỉ là khối placeholder.</li>
+        <li>Toàn bộ tên người, số định danh, merchant là dữ liệu giả lập.</li>
+        <li>Bắt đầu từ trạng thái đã đăng nhập - không mô phỏng màn hình xác thực định danh thật.</li>
+      </ul>`;
+    if (kind==="kiosk"){
+      return common + `<p>Chế độ đang xem: <b>màn hình cán bộ chương trình</b> (quầy hỗ trợ), không phải điện thoại người dân.</p>
+      <button onclick="AppSim.dismissIntro('kiosk')">Đã hiểu, xem minh họa →</button>`;
+    }
+    if (kind==="merchant"){
+      return common + `<p>Chế độ đang xem: <b>thiết bị merchant</b> (điểm chấp nhận), mô phỏng thao tác của Anh Hùng - chủ tạp hóa.</p>
+      <button onclick="AppSim.dismissIntro('merchant')">Đã hiểu, xem minh họa →</button>`;
+    }
+    return common + `<p>Chế độ đang xem: <b>điện thoại người thụ hưởng</b> (Chị Lan).</p>
+    <button onclick="AppSim.dismissIntro('citizen')">Đã hiểu, xem minh họa →</button>`;
+  }
+
+  /* ================= CITIZEN SCREENS ================= */
+  function screenHome(){
+    const activeBenefits = Object.values(BENEFITS).filter(b=>b.status==="active" && (b.id==="QL-0001"||b.id==="QL-0002"));
+    const utilities = [
+      {icon:"doc", label:"Dịch vụ công", dot:false},
+      {icon:"shield", label:"Bảo hiểm xã hội", dot:false},
+      {icon:"gift2", label:"Quyền lợi và Hỗ trợ", dot:true, action:()=>cGoRoot("benefits")},
+      {icon:"percent", label:"Thuế cá nhân", dot:false},
+      {icon:"build", label:"Cư trú", dot:false},
+      {icon:"car", label:"Giao thông", dot:false}
+    ];
+    return `
+      <div class="id-card">
+        <div class="stripe"></div>
+        <div class="row"><div class="avatar">CL</div>
+          <div><div class="name">Chị Lan (minh họa)</div><div class="idnum">Mã định danh: 000xxx****119 (giả lập)</div></div>
+        </div>
+        <div class="verify-chip">${ICON.shield("#e7f2ee")} Đã định danh điện tử mức 2 (minh họa)</div>
+      </div>
+      <div class="section-title">Tiện ích</div>
+      <div class="quick-grid">
+        ${utilities.map(u=>`<div class="quick-item" onclick="${u.action?`AppSim.goRootUtil('benefits')`:'void(0)'}">
+          ${u.dot?'<span class="qi-dot"></span>':''}
+          <div class="qi-ic" style="background:#eef1f4;">${ICON[u.icon]("#3d6a63")}</div>${u.label}
+        </div>`).join("")}
+      </div>
+      <div class="section-title">Quyền lợi gần đây<span class="more" onclick="AppSim.goRootUtil('benefits')">Xem tất cả</span></div>
+      ${activeBenefits.map(b=>benefitRow(b)).join("")}
+    `;
+  }
+
+  function benefitRow(b){
+    return `<div class="b-card" onclick="AppSim.go('benefitDetail','${b.id}')">
+      <div class="bc-ic" style="background:${b.color}1f;">${ICON[b.icon](b.color)}</div>
+      <div style="flex:1;">
+        <div class="bc-title">${b.chuongTrinh}</div>
+        <div class="bc-issuer">${b.coQuanCap}</div>
+        <div class="bc-value">${fmt(b.nhomMucDich.reduce((s,x)=>s+x.conLai,0))}đ giá trị còn lại</div>
+      </div>
+      ${benefitStatusChip(b)}
+    </div>`;
+  }
+
+  function screenBenefits(){
+    const list = [BENEFITS["QL-0001"], BENEFITS["QL-0002"]];
+    return `
+      <div class="section-title" style="margin-top:14px;">Danh sách quyền lợi<span class="more" onclick="AppSim.goRootUtil('history')">Lịch sử</span></div>
+      ${list.map(b=>benefitRow(b)).join("")}
+      <p style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6;">Mỗi quyền lợi gắn một mục đích rõ ràng do cơ quan chủ quản
+      cấp - không phải một khoản tiền chung có thể dùng tùy ý.</p>
+    `;
+  }
+
+  function screenBenefitDetail(id){
+    const b = BENEFITS[id];
+    const tongConLai = b.nhomMucDich.reduce((s,x)=>s+x.conLai,0);
+    return `
+      <div class="hero" style="background:linear-gradient(135deg,${b.color},${b.color}cc);">
+        <div class="h-stripe"></div>
+        <div class="h-tag">${b.chuongTrinh}</div>
+        <div class="h-value">${fmt(tongConLai)}đ <span style="font-size:12px;font-weight:500;">giá trị còn lại</span></div>
+        <div class="h-sub">Cấp bởi ${b.coQuanCap}</div>
+        <div class="h-id">Mã quyền lợi: ${b.id} · Hạn dùng: ${fmtDate(b.hanDung)}</div>
+      </div>
+
+      <div class="detail-block">
+        <h4>Nhóm mục đích con (không chuyển đổi qua lại)</h4>
+        ${b.nhomMucDich.map(sp=>`<div class="sub-purse"><span class="sp-name">${sp.ten}</span><span class="sp-value">${fmt(sp.conLai)}đ / ${fmt(sp.giaTri)}đ</span></div>`).join("")}
+        <div class="no-transfer-note">${ICON.lock("#b3541e")}<span>Không có chức năng chuyển nhượng hoặc quy đổi tiền mặt giữa các nhóm, hoặc cho người khác.</span></div>
+      </div>
+
+      <div class="detail-block">
+        <h4>Hạn mức sử dụng</h4>
+        <div class="limit-grid">
+          <div class="limit-box"><div class="lb-label">Tối đa / lần</div><div class="lb-value">${fmt(b.hanMucLan)}đ</div></div>
+          <div class="limit-box"><div class="lb-label">Tối đa / tháng</div><div class="lb-value">${fmt(b.hanMucThang)}đ</div></div>
+        </div>
+      </div>
+
+      <div class="detail-block">
+        <h4>Được dùng cho nhóm hàng</h4>
+        <ul class="bullet-list">${b.nhomHangChoPhep.map(x=>`<li>${x}</li>`).join("")}</ul>
+        <h4 style="margin-top:12px;">Không được dùng cho</h4>
+        <ul class="bullet-list excl">${b.nhomHangLoaiTru.map(x=>`<li>${x}</li>`).join("")}</ul>
+      </div>
+
+      <button class="primary-btn" onclick="AppSim.go('findMerchant','${b.id}')">Tìm điểm sử dụng quyền lợi</button>
+    `;
+  }
+
+  function screenFindMerchant(id){
+    const b = BENEFITS[id];
+    return `
+      <div class="map-box">
+        ${b.merchants.map((m,i)=>`<div class="map-pin" style="left:${20+i*70}px;top:${30+((i%2)*40)}px;"></div>`).join("")}
+      </div>
+      <div class="section-title">Điểm sử dụng gần bạn</div>
+      ${b.merchants.map(m=>`<div class="merchant-row">
+        <div>${ICON.pin("#3d6a63")}</div>
+        <div style="flex:1;margin-left:8px;"><div class="mr-name">${m}</div><div class="mr-sub">Merchant liên kết chương trình</div></div>
+        <button class="ghost-btn" style="width:auto;margin:0;padding:7px 12px;font-size:11.5px;" onclick="AppSim.go('useCode','${b.id}')">Sử dụng tại đây</button>
+      </div>`).join("")}
+    `;
+  }
+
+  let qrTimerHandle=null, qrNonce=0;
+  function screenUseCode(id){
+    const b = BENEFITS[id];
+    qrNonce++;
+    let seed=qrNonce*97; for (const ch of b.id) seed+=ch.charCodeAt(0);
+    return `
+      <div class="qr-wrap">
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:2px;">Đưa mã này cho merchant quét</div>
+        <div class="qr-box">${qrCells(seed)}</div>
+        <div style="font-size:15px;font-weight:700;margin-top:12px;color:var(--primary-2);">Tối đa ${fmt(b.hanMucLan)}đ cho lần sử dụng này</div>
+        <div class="qr-timer">Mã tự đổi sau <b id="qrCountdown">00:60</b></div>
+        <div class="qr-note">Mã hết hiệu lực và đổi liên tục để chống chụp màn hình gửi cho người khác.
+        Chuyển sang thiết bị merchant để tiếp tục mô phỏng giao dịch.</div>
+        <button class="primary-btn" onclick="AppSim.jumpToStep('M1')">Chuyển sang thiết bị merchant (M1) →</button>
+      </div>
+    `;
+  }
+
+  function screenConfirmUse(id){
+    const b = BENEFITS[id];
+    const txn = merchantTxn;
+    const tongConLai = b.nhomMucDich.reduce((s,x)=>s+x.conLai,0);
+    if (!txn.time) {
+      return `<div class="empty-hint">Chưa có giao dịch nào được merchant xác nhận.<br>Hãy đi qua bước M3 trước.</div>`;
+    }
+    return `
+      <div class="used-note">${ICON.check("#2f7a52")}<span>Đã sử dụng quyền lợi thành công.</span></div>
+      <div class="detail-block">
+        <h4>Chi tiết giao dịch</h4>
+        <div class="kv-row"><span>Ngày giờ</span><span>${fmtDate(txn.time)} ${fmtTime(txn.time)}</span></div>
+        <div class="kv-row"><span>Merchant</span><span>${txn.merchant}</span></div>
+        <div class="kv-row"><span>Nhóm hàng</span><span>${txn.nhom}</span></div>
+        <div class="kv-row"><span>Giá trị đã dùng</span><span>${fmt(txn.giaTri)}đ</span></div>
+        <div class="kv-row"><span>Giá trị còn lại</span><span>${fmt(tongConLai)}đ</span></div>
+      </div>
+      <button class="ghost-btn" onclick="AppSim.goRootUtil('history')">Xem lịch sử đầy đủ</button>
+    `;
+  }
+
+  function screenHistory(){
+    return `
+      <div class="section-title" style="margin-top:14px;">Lịch sử sử dụng</div>
+      ${history.map(h=>`<div class="hist-item">
+        <div><div class="hi-title">${h.chuongTrinh}</div><div class="hi-sub">${h.merchant}${h.nhom!=="-" ? " · "+h.nhom : ""} · ${fmtDate(h.time)}</div></div>
+        <div class="hi-value" style="color:${h.expired?'var(--danger)':'var(--ink)'};">${h.expired?'Hết hạn':fmt(h.giaTri)+'đ'}</div>
+      </div>`).join("")}
+    `;
+  }
+
+  function screenAccount(){
+    return `
+      <div class="id-card"><div class="stripe"></div>
+        <div class="row"><div class="avatar">CL</div>
+          <div><div class="name">Chị Lan (minh họa)</div><div class="idnum">SĐT: 0900 000 000 (số hư cấu)</div></div>
+        </div>
+      </div>
+      <p class="disclaimer" style="margin-top:10px;">Màn hình tài khoản minh họa, không chứa dữ liệu thật. Bản mockup bắt đầu từ
+      trạng thái đã đăng nhập, không mô phỏng bước xác thực định danh.</p>
+    `;
+  }
+
+  function qrCells(seed){
+    let cells="", s=seed;
+    for (let i=0;i<121;i++){
+      s=(s*9301+49297)%233280;
+      const on=(s/233280)>0.46;
+      const r=Math.floor(i/11), c=i%11;
+      const inCorner=(r<3&&c<3)||(r<3&&c>7)||(r>7&&c<3);
+      cells+=`<i class="${(on||inCorner)?'':'off'}"></i>`;
+    }
+    return cells;
+  }
+
+  function startQrCountdown(){
+    if (qrTimerHandle) clearInterval(qrTimerHandle);
+    let remaining=60;
+    qrTimerHandle=setInterval(()=>{
+      remaining--;
+      const el=document.getElementById("qrCountdown");
+      if (!el){ clearInterval(qrTimerHandle); return; }
+      el.textContent = "00:"+String(Math.max(remaining,0)).padStart(2,"0");
+      if (remaining<=0){ remaining=60; renderDevice(); }
+    },1000);
+  }
+
+  /* ================= KIOSK SCREEN (A8) ================= */
+  function screenKiosk(){
+    const b = BENEFITS[baTu.benefitId];
+    return `
+      <div class="kiosk-header">Màn hình cán bộ chương trình - quầy hỗ trợ
+        <div class="sub">Không phải màn hình điện thoại người dân. Dành cho người không dùng smartphone.</div>
+      </div>
+      <div class="screen-body">
+        ${idPlaceholderHtml()}
+        <div class="lookup-box">
+          <div style="font-size:12.5px;font-weight:700;">Tra cứu theo mã định danh</div>
+          <input type="text" value="${baTu.ma}" readonly>
+          <button class="primary-btn" style="margin-top:12px;" onclick="AppSim.kioskLookup()">Tra cứu</button>
+        </div>
+        ${kioskLookupDone ? `
+        <div class="detail-block">
+          <h4>Kết quả tra cứu</h4>
+          <div class="kv-row"><span>Họ tên</span><span>${baTu.ten} (minh họa)</span></div>
+          <div class="kv-row"><span>Số điện thoại</span><span>${baTu.dienThoai}</span></div>
+          <div class="kv-row"><span>Quyền lợi</span><span>${b.chuongTrinh}</span></div>
+          <div class="kv-row"><span>Giá trị còn lại</span><span>${fmt(b.nhomMucDich.reduce((s,x)=>s+x.conLai,0))}đ</span></div>
+          <div class="kv-row"><span>Hạn dùng</span><span>${fmtDate(b.hanDung)}</span></div>
+        </div>
+        <button class="primary-btn" onclick="AppSim.kioskPrint()">In phiếu sử dụng cho người thụ hưởng</button>
+        ` : ""}
+        ${kioskSlipPrinted ? `
+        <div class="paper-slip">
+          <div class="ps-title">PHIẾU SỬ DỤNG QUYỀN LỢI (MINH HỌA)</div>
+          <div class="ps-row"><span>Chương trình</span><span>${b.chuongTrinh}</span></div>
+          <div class="ps-row"><span>Người thụ hưởng</span><span>${baTu.ten}</span></div>
+          <div class="ps-row"><span>Giá trị</span><span>${fmt(b.hanMucLan)}đ / lần</span></div>
+          <div class="ps-row"><span>Hạn dùng</span><span>${fmtDate(b.hanDung)}</span></div>
+          <div class="ps-code">MK-${baTu.ma.slice(-6)}</div>
+          <div class="ps-note">Xuất trình phiếu này tại merchant liên kết. Cán bộ merchant nhập mã để xác nhận và ghi nhận giao dịch.
+          Phiếu không có giá trị quy đổi tiền mặt, không chuyển nhượng.</div>
+        </div>` : ""}
+      </div>
+    `;
+  }
+
+  /* ================= MERCHANT SCREENS (M1-M4) ================= */
+  function screenMerchant(){
+    const b = BENEFITS[merchantTxn.benefitId];
+    if (merchantStep===1){
+      return topbarWrap("Thiết bị merchant · M1", false, `
+        <div style="text-align:center;padding-top:30px;">
+          <div style="width:150px;height:150px;margin:0 auto;border:2px dashed #b9c1cc;border-radius:16px;
+            display:flex;align-items:center;justify-content:center;">${ICON.scan("#6b7787")}</div>
+          <p style="font-size:12.5px;color:var(--muted);margin-top:14px;">Đang quét mã sử dụng của người thụ hưởng...</p>
+          <button class="primary-btn" onclick="AppSim.merchantNext()">Đã quét được mã</button>
+        </div>`);
+    }
+    if (merchantStep===2){
+      return topbarWrap("Thiết bị merchant · M2", true, `
+        <div class="detail-block">
+          <h4>Kiểm tra hợp lệ</h4>
+          <div class="kv-row"><span>Quyền lợi</span><span>${b.chuongTrinh}</span></div>
+          <div class="kv-row"><span>Dùng được cho</span><span style="text-align:right;">${b.nhomHangChoPhep.join(", ")}</span></div>
+          <div class="kv-row"><span>Giá trị còn lại</span><span>${fmt(b.nhomMucDich.reduce((s,x)=>s+x.conLai,0))}đ</span></div>
+          <div class="kv-row"><span>Tối đa / lần</span><span>${fmt(b.hanMucLan)}đ</span></div>
+        </div>
+        <button class="primary-btn" onclick="AppSim.merchantNext()">Hợp lệ, tiếp tục</button>`);
+    }
+    if (merchantStep===3){
+      return topbarWrap("Thiết bị merchant · M3", true, `
+        <div class="field"><label>Nhóm hàng</label>
+          <select id="mNhom">${b.nhomHangChoPhep.map(x=>`<option>${x}</option>`).join("")}</select>
+        </div>
+        <div class="field"><label>Giá trị giao dịch (tối đa ${fmt(b.hanMucLan)}đ / lần)</label>
+          <input type="number" id="mGiaTri" max="${b.hanMucLan}" step="10000" value="${Math.min(80000,b.hanMucLan)}">
+        </div>
+        <button class="primary-btn" onclick="AppSim.merchantConfirm()">Xác nhận giao dịch</button>`);
+    }
+    const txn = merchantTxn;
+    return topbarWrap("Thiết bị merchant · M4", false, `
+      <div class="success-wrap">
+        <div class="check-circle">${ICON.receipt("#2f7a52")}</div>
+        <h3>Biên nhận giao dịch</h3>
+        <div class="detail-block" style="text-align:left;width:100%;">
+          <div class="kv-row"><span>Mã giao dịch</span><span>${txn.code||"GD-"+Math.floor(1000+Math.random()*9000)}</span></div>
+          <div class="kv-row"><span>Nhóm hàng</span><span>${txn.nhom}</span></div>
+          <div class="kv-row"><span>Giá trị</span><span>${fmt(txn.giaTri)}đ</span></div>
+          <div class="kv-row"><span>Quyết toán dự kiến</span><span>Trong 3 ngày làm việc</span></div>
+        </div>
+        <div class="no-transfer-note" style="margin-top:14px;">${ICON.warn("#b3541e")}<span>Merchant cần xuất hóa đơn điện tử cho giao dịch này -
+        dữ liệu sẽ xuất hiện trong Portal quản lý cho cơ quan thuế (Hạng mục B).</span></div>
+        <button class="primary-btn" onclick="AppSim.jumpToStep('A6')">Quay lại góc nhìn người dân (A6) →</button>
+      </div>`);
+  }
+
+  function topbarWrap(title, showBack, bodyHtml){
+    return `<div class="app-topbar">
+      ${showBack?`<div class="back-btn" onclick="AppSim.merchantBack()">${ICON.back("#1a2230")}</div>`:`<div style="width:29px;"></div>`}
+      <h2 style="font-size:14.5px;">${title}</h2><div style="width:29px;"></div></div>
+      <div class="screen-body">${bodyHtml}</div>`;
+  }
+
+  /* ================= DEVICE SHELL RENDER ================= */
+  function renderDevice(){
+    const mount = document.getElementById("deviceMount");
+    const labelEl = document.getElementById("deviceLabel");
+
+    if (mode==="citizen"){
+      labelEl.innerHTML = `Thiết bị: <b>điện thoại người thụ hưởng</b> (Chị Lan)`;
+      mount.innerHTML = `
+        <div class="phone"><div class="notch"></div>
+          <div class="device-screen" id="dScreen">
+            ${!introDismissed.citizen ? `<div class="intro-overlay">${introHtml("citizen")}</div>` : ""}
+            <div class="push-toast" id="pushToast"><div class="pt-icon">${ICON.bell("#fff")}</div>
+              <div><div class="pt-title">Thông báo</div><div class="pt-body" id="pushBody">Bạn được cấp quyền lợi mới</div></div>
+            </div>
+            ${persistBannerHtml()}${statusBarHtml()}
+            <div id="citizenTopbar"></div>
+            <div class="screen-body" id="citizenBody"></div>
+            <div class="bottom-nav" id="citizenNavBar"></div>
+          </div>
+        </div>`;
+      renderCitizen();
+    } else if (mode==="kiosk"){
+      labelEl.innerHTML = `Thiết bị: <b>màn hình cán bộ chương trình</b> (quầy hỗ trợ - cho người không dùng smartphone)`;
+      mount.innerHTML = `
+        <div class="kiosk">
+          <div class="device-screen" id="dScreen">
+            ${!introDismissed.kiosk ? `<div class="intro-overlay">${introHtml("kiosk")}</div>` : ""}
+            ${persistBannerHtml()}
+            ${screenKiosk()}
+          </div>
+        </div>`;
+    } else {
+      labelEl.innerHTML = `Thiết bị: <b>thiết bị merchant</b> (điểm chấp nhận - Anh Hùng, chủ tạp hóa)`;
+      mount.innerHTML = `
+        <div class="phone merchant"><div class="notch"></div>
+          <div class="device-screen" id="dScreen">
+            ${!introDismissed.merchant ? `<div class="intro-overlay">${introHtml("merchant")}</div>` : ""}
+            ${persistBannerHtml()}${statusBarHtml()}
+            ${screenMerchant()}
+          </div>
+        </div>`;
+    }
+  }
+
+  function renderCitizen(){
+    const {name,param} = cCurrent();
+    let html="";
+    if (name==="home") html=screenHome();
+    else if (name==="benefits") html=screenBenefits();
+    else if (name==="benefitDetail") html=screenBenefitDetail(param);
+    else if (name==="findMerchant") html=screenFindMerchant(param);
+    else if (name==="useCode") html=screenUseCode(param);
+    else if (name==="confirmUse") html=screenConfirmUse(param);
+    else if (name==="history") html=screenHistory();
+    else if (name==="account") html=screenAccount();
+    document.getElementById("citizenBody").innerHTML = html;
+    document.getElementById("citizenBody").scrollTop=0;
+
+    const titles={home:null, benefits:"Quyền lợi của tôi", benefitDetail:"Chi tiết quyền lợi", findMerchant:"Tìm điểm sử dụng",
+      useCode:"Mã sử dụng", confirmUse:"Xác nhận đã dùng", history:"Lịch sử sử dụng", account:"Tài khoản"};
+    const showBack = ["benefitDetail","findMerchant","useCode","confirmUse","history"].includes(name);
+    document.getElementById("citizenTopbar").innerHTML = (name==="home") ? "" : `<div class="app-topbar">
+      ${showBack?`<div class="back-btn" onclick="AppSim.back()">${ICON.back("#1a2230")}</div>`:`<div style="width:29px;"></div>`}
+      <h2>${titles[name]||""}</h2><div style="width:29px;"></div></div>`;
+
+    const rootScreens=["home","benefits","account"];
+    const navBar=document.getElementById("citizenNavBar");
+    if (!rootScreens.includes(name)){ navBar.style.display="none"; }
+    else{
+      navBar.style.display="flex";
+      const items=[{id:"home",label:"Trang chủ",icon:"home"},{id:"benefits",label:"Quyền lợi của tôi",icon:"gift2",badge:true},
+        {id:"history",label:"Lịch sử",icon:"doc"},{id:"account",label:"Tài khoản",icon:"user"}];
+      navBar.innerHTML = items.map(it=>`<div class="nav-item ${name===it.id?'active':''} ${it.badge&&name!=='benefits'?'has-badge':''}" onclick="AppSim.goRootUtil('${it.id}')">
+        <span class="badge-dot"></span>${ICON[it.icon](name===it.id?"#3d6a63":"#9aa8ba")}<span>${it.label}</span></div>`).join("");
+    }
+    if (name==="useCode") startQrCountdown();
+  }
+
+  /* ================= STEP PANEL ================= */
+  function renderStepPanel(){
+    document.getElementById("stepGrid").innerHTML = STEPS.map((s,i)=>
+      `<div class="step-btn ${i===currentStepIdx?'active':(i<currentStepIdx?'done':'')}" onclick="AppSim.jumpToStep('${s.id}')">${s.label}</div>`
+    ).join("");
+    document.getElementById("stepDesc").innerHTML = `<b>${STEPS[currentStepIdx].title}</b><br>${STEPS[currentStepIdx].desc}`;
+    document.getElementById("prevBtn").disabled = currentStepIdx===0;
+    document.getElementById("nextBtn").disabled = currentStepIdx===STEPS.length-1;
+  }
+
+  function applyStep(idx){
+    currentStepIdx = idx;
+    STEPS[idx].apply();
+    renderStepPanel();
+    renderDevice();
+  }
+
+  function render(){ renderDevice(); }
+
+  /* ================= EXPOSE ================= */
+  window.AppSim = {
+    go: cGo, back: cBack,
+    goRootUtil: (name) => { cGoRoot(name); syncStepFromCitizen(name); },
+    jumpToStep: (id) => { const idx = STEPS.findIndex(s=>s.id===id); if (idx>=0) applyStep(idx); },
+    dismissIntro: (kind) => { introDismissed[kind]=true; renderDevice(); },
+    kioskLookup: () => { kioskLookupDone=true; renderDevice(); },
+    kioskPrint: () => { kioskSlipPrinted=true; renderDevice(); },
+    merchantNext: () => { merchantStep=Math.min(4,merchantStep+1); currentStepIdx=STEPS.findIndex(s=>s.id==="M"+merchantStep); renderStepPanel(); renderDevice(); },
+    merchantBack: () => { merchantStep=Math.max(1,merchantStep-1); currentStepIdx=STEPS.findIndex(s=>s.id==="M"+merchantStep); renderStepPanel(); renderDevice(); },
+    merchantConfirm: () => {
+      const nhom = document.getElementById("mNhom").value;
+      const giaTri = Math.min(parseInt(document.getElementById("mGiaTri").value,10)||0, BENEFITS[merchantTxn.benefitId].hanMucLan);
+      merchantTxn = { benefitId: merchantTxn.benefitId, giaTri, nhom, time:new Date(), merchant:"Tạp hóa Cô Ba", code:"GD-"+Math.floor(1000+Math.random()*9000) };
+      // trừ vào nhóm mục đích con đầu tiên có đủ giá trị (đơn giản hóa cho demo)
+      const b = BENEFITS[merchantTxn.benefitId];
+      for (const sp of b.nhomMucDich){ if (sp.conLai>=giaTri){ sp.conLai -= giaTri; break; } }
+      history.unshift({id:merchantTxn.code, chuongTrinh:b.chuongTrinh, merchant:merchantTxn.merchant, nhom, giaTri, time:merchantTxn.time});
+      merchantStep=4; currentStepIdx=STEPS.findIndex(s=>s.id==="M4"); renderStepPanel(); renderDevice();
+    }
+  };
+
+  function syncStepFromCitizen(name){
+    const map={home:"A1",benefits:"A2",history:"A7",account:"A2"};
+    const id=map[name]; if (id){ const idx=STEPS.findIndex(s=>s.id===id); if (idx>=0){ currentStepIdx=idx; renderStepPanel(); } }
+  }
+
+  document.getElementById("prevBtn").addEventListener("click",()=>{ if (currentStepIdx>0) applyStep(currentStepIdx-1); });
+  document.getElementById("nextBtn").addEventListener("click",()=>{ if (currentStepIdx<STEPS.length-1) applyStep(currentStepIdx+1); });
+
+  /* ================= INIT ================= */
+  applyStep(0);
+
+})();
+</script>
+</body>
+</html>
